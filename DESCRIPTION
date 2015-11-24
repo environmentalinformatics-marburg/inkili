@@ -1,11 +1,13 @@
 Package: inkili
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Find out which plots are included in lidar coverage
 Version: 0.1
 Date: 2015-11-19
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Author: Alice Ziegler
+Maintainer: Alice Ziegler <tim.appelhans@gmail.com>
+Description: Functions to work with KiLi LiDAR data for insect prediction.
+License: GPL (>= 3) | file LICENSE
 LazyData: TRUE
-Depends: rPointDB
+Depends:
+    rPointDB
+RoxygenNote: 5.0.1

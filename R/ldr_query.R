@@ -1,45 +1,25 @@
-#' View extent/bbox of spatial objects interactively
+#' Find out which plots are included in lidar coverage
 #'
 #' @description
-#' This function produces an interactive GIS-like view of the extent/bbox
-#' of the supplied spatial object
+#' This function produces a character vector with names of plots that are
+#' covered by lidar data
 #'
-#' @param x either a Raster* object or a Spatial* object
-#' @param map a leaflet map the extent should be added to. If NULL
-#' standard background layers are cretaed
-#' @param map.types the map types to be used in case map is NULL
-#' @param ... additional arguments passed on to \code{\link{addRectangles}}
+#' @param plotID Column with names of the plots
+#' @param crdnt_x Column with x-coordinates (in UTM)
+#' @param crdnt_y Column with y-coordinates (in UTM)
+#' @param radius Search radius for Lidar points (should be chosen small to work quick)
 #'
 #' @author
-#' Tim Appelhans
+#' Alice Ziegler
 #'
 #' @export ldr_query
 #' @name ldr_query
 #' @aliases ldr_query
 #'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Column with x-coordinates needs to be named "x_pnt"
-# Column with y-coordinates needs to be named "y_pnt"
-# Column with name of plots needs to be named "plotID"
-# radius should be chosen small to make it work quicker
-
 ldr_query <- function (plotID, crdnt_x, crdnt_y, radius = 1){
 
-  #getting lidar data involved
-  ###db aufrufen (von Stefan)
+  ###db aufrufen (von Stephan Wöllauer)
 
   db_url <- "http://137.248.191.249:8081/pointdb"
   pointdb <- PointDB$new(db_url)
