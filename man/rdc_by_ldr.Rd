@@ -22,7 +22,7 @@ to work quick) can be provided.}
 \description{
 This function reduces a dataframe, so that only entries are kept that are in
 a vector (by names). If no list exists yet, a dataframe with names of plots
-and coordinates can be passed so that the function "ldr_query" can create
+and coordinates can be passed so that the function "ldr_names" can create
 such a vector.
 }
 \author{

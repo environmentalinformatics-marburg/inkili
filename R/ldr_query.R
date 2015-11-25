@@ -35,7 +35,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
   ldr_sapply <- sapply(seq(length(crdnt_x)), function(i) {
     ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius)
     #calculate maximal height
-    ldr_max <- max(ldr_pnts_all$z)
+    ldr_max_hght <- max(ldr_pnts_all$z)
     #calculate standard deviation
     ldr_sd_hght <- sd(ldr_pnts_all$z)
     #calculate median of total number of returns for each coordinate

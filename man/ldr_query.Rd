@@ -2,22 +2,16 @@
 % Please edit documentation in R/ldr_query.R
 \name{ldr_query}
 \alias{ldr_query}
-\title{Find out which plots are included in lidar coverage}
+\title{Get statistical information about lidar data on a plot}
 \usage{
-ldr_query(plotID, crdnt_x, crdnt_y, radius = 1)
+ldr_query(plotID, crdnt_x, crdnt_y, radius)
 }
 \arguments{
-\item{plotID}{Column with names of the plots}
-
-\item{crdnt_x}{Column with x-coordinates (in UTM)}
-
-\item{crdnt_y}{Column with y-coordinates (in UTM)}
-
-\item{radius}{Search radius for Lidar points (should be chosen small to work quick)}
+\item{dataframe_crdnt}{Dataframe with plot-ID, x-coordinates and y-coordinates
+in three columns named: "plotID", "x_pnt" and "y_pnt".}
 }
 \description{
-This function produces a character vector with names of plots that are
-covered by lidar data
+This function produces a dataframe with statistical information about lidar data
 }
 \author{
 Alice Ziegler
