@@ -3,7 +3,7 @@
 #' @description
 #' This function reduces a dataframe, so that only entries are kept that are in
 #' a vector (by names). If no list exists yet, a dataframe with names of plots
-#' and coordinates can be passed so that the function "ldr_query" can create
+#' and coordinates can be passed so that the function "ldr_names" can create
 #' such a vector.
 #'
 #' @param dataframe_plts Dataframe that should be reduced in the end.
@@ -37,7 +37,7 @@ rdc_by_ldr <- function(dataframe_plts,
                        v_plts,
                        ...){        #...radius = 1
   if (!is.null(dataframe_crdnt)){
-    v_plts <- ldr_query(dataframe_crdnt$plotID,
+    v_plts <- ldr_names(dataframe_crdnt$plotID,
                            dataframe_crdnt$x_pnt,
                            dataframe_crdnt$y_pnt,
                            ...)     #schreibt hier radius = 1 automatisch rein
