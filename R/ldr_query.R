@@ -34,6 +34,8 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
 
   ldr_sapply <- sapply(seq(length(crdnt_x)), function(i) {
     ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius)
+    ##check if order is right when cbinding
+    #plts_name <- as.character(plotID[i])
     #calculate maximal height
     ldr_max_hght <- max(ldr_pnts_all$z)
     #calculate standard deviation
@@ -58,7 +60,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
     ldr_qntl_50 <- ldr_qntl[[3]]
     ldr_qntl_75 <- ldr_qntl[[4]]
     ldr_qntl_100 <- ldr_qntl[[5]]
-    return(list(max_hght = ldr_max_hght, sd = ldr_sd_hght, mdn = ldr_mdn_rtrn,
+    return(list(plotID = plts_name, max_hght = ldr_max_hght, sd = ldr_sd_hght, mdn = ldr_mdn_rtrn,
                 max_angl = ldr_max_angl, qntl_0 = ldr_qntl_0,
                 qntl_25 = ldr_qntl_25, qntl_50 = ldr_qntl_50,
                 qntl_75 = ldr_qntl_75, qntl_100 = ldr_qntl_100))
@@ -67,7 +69,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
   ### unlist elements from sapply-loop
   for (i in 1:ncol(vars)) {
     vars[, i] <- unlist(vars[, i])}
-  ldr_var <- cbind(tec_crdnt, vars)
+  ldr_var <- cbind(plotID, crdnt_x, crdnt_y, vars)
 
   return(ldr_var)
 }
