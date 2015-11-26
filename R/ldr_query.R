@@ -60,7 +60,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
     ldr_qntl_50 <- ldr_qntl[[3]]
     ldr_qntl_75 <- ldr_qntl[[4]]
     ldr_qntl_100 <- ldr_qntl[[5]]
-    return(list(plotID = plts_name, max_hght = ldr_max_hght, sd = ldr_sd_hght, mdn = ldr_mdn_rtrn,
+    return(list(max_hght = ldr_max_hght, sd = ldr_sd_hght, mdn = ldr_mdn_rtrn,
                 max_angl = ldr_max_angl, qntl_0 = ldr_qntl_0,
                 qntl_25 = ldr_qntl_25, qntl_50 = ldr_qntl_50,
                 qntl_75 = ldr_qntl_75, qntl_100 = ldr_qntl_100))
