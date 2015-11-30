@@ -1,111 +1,93 @@
 setwd("/media/aziegler/Volume/data_div")
 
 # Libraries --------------------------------------------------------------------
-# library(gpm)
+library(gpm)
 
 
 
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
-orthoptera <- read.table("original/lvl0300_biodiversity_data.csv", 
-                         header = TRUE, sep = ";", dec = ",")
+grnd_ldr <- read.table("grnd_ldr.csv", 
+                         header = TRUE, sep = ",", dec = ".")
 
-# Replace number of observations and NAs to 1/0
-orthoptera[, 14:178][!is.na(orthoptera[, 14:178])] <- "yes"
-orthoptera[, 14:178][is.na(orthoptera[, 14:178])] <- "no"
-for(i in seq(14, 178)){
-  orthoptera[, i] <- as.factor(orthoptera[, i])
-}
-
-# Compile dataset containing complete cases only
-orthoptera <- 
-  orthoptera[, -(which(colnames(orthoptera) == "greyval_band_11") : 
-                   which(colnames(orthoptera) == "greyval_band_16"))]
-any(is.na(orthoptera[, -7]))
-
-col_meta <- seq(1, 13)
-col_species <- seq(14, 178)
-col_modis <- seq(179, 208)
-
-meta <- createGPMMeta(orthoptera, type = "input",
-                      selector = 1, response = seq(14, 178), 
-                      independent = seq(179, 208), meta = c(2: 13))
-orthoptera <- gpm(orthoptera, meta)
-# save(orthoptera, file = "processed/orthoptera.rda")
+meta_data <- createGPMMeta(grnd_ldr, type = "input",
+                      selector = 1, response = c(24:57, 61:119), 
+                      independent = c(4:12), meta = c(2,3,13:23, 58:60))
+grnd_ldr <- gpm(grnd_ldr, meta_data)
+# save(grnd_ldr, file = "processed/grnd_ldr.rda")
 
 
 
 
 # Select responses occuring at least across 20 unique selector values on average
-# load("processed/orthoptera.rda")
-plotid <- orthoptera@data$input$plot
-observations <- orthoptera@data$input[, col_species]
+# load("processed/grnd_ldr.rda")
+plotid <- grnd_ldr@data$input[,grnd_ldr@meta$input$SELECTOR]
+observations <- grnd_ldr@data$input[, grnd_ldr@meta$input$RESPONSE]
 min_occurence <- minimumOccurence(x = observations, selector = plotid,
-                                  occurence = "yes", 
+                                  occurence = 0, 
                                   resample = 100, thv = 20)
-prevalent_species <- min_occurence[[1]]
-prevalence <- data.frame(min_occurence[[2]])
-prevalence$RESPONSE <- rownames(prevalence)
-names(prevalence)[1] <- "OCCURENCE"
-rownames(prevalence) <- NULL
-# save(prevalent_species, file = "processed/prevalent_species.rda")
-# save(prevalence, file = "processed/prevalence.rda")
+common_response_variables <- min_occurence[[1]]
+common_response <- data.frame(min_occurence[[2]])
+common_response$RESPONSE <- rownames(common_response)
+names(common_response)[1] <- "OCCURENCE"
+rownames(common_response) <- NULL
+# save(common_response_variables, file = "gpm_common_response_variables.rda")
+# save(common_response, file = "gpm_common_response.rda")
 
 
 # Compile model evaluation dataset ---------------------------------------------
-orthoptera_resamples <- resamplingsByVariable(x = orthoptera@data$input, 
+grnd_ldr_resamples <- resamplingsByVariable(x = grnd_ldr@data$input, 
                                               selector = plotid, 
                                               resample = 100)
-# save(orthoptera_resamples, file = "processed/orthoptera_resamples.rda")
+# save(grnd_ldr_resamples, file = "gpm_grnd_ldr_resamples.rda")
 
 
 
 
 # Split dataset into testing and training samples for each individual species --
-# load("processed/orthoptera.rda")
-# load("processed/prevalent_species.rda")
-# load("processed/orthoptera_resamples.rda")
-col_response <- prevalent_species
-orthoptera_trte <- splitMultResp(x = orthoptera@data$input, 
+# load("processed/grnd_ldr.rda")
+# load("processed/common_response_variables.rda")
+# load("processed/grnd_ldr_resamples.rda")
+col_response <- common_response_variables
+grnd_ldr_trte <- splitMultResp(x = grnd_ldr@data$input, 
                                  response = col_response,
-                                 resamples = orthoptera_resamples)
-# save(orthoptera_trte, file = "processed/orthoptera_trte.rda")
-
+                                 resamples = grnd_ldr_resamples)
+# save(grnd_ldr_trte, file = "gpm_grnd_ldr_trte.rda")
+# grnd_ldr_trte[[10]][[100]]$testing$SAMPLES
+# grnd_ldr@data$input[grnd_ldr_trte[[10]][[100]]$testing$SAMPLES, grnd_ldr_trte[[10]][[100]]$testing$RESPONSE]
 
 
 
 # Evaluate prediction models ---------------------------------------------------
-# load("processed/orthoptera.rda")
-# load("processed/prevalent_species.rda")
-# load("processed/orthoptera_trte.rda")
-response <- prevalent_species
-independent <- orthoptera@meta$input$INDEPENDENT
+# load("processed/grnd_ldr.rda")
+# load("processed/common_response_variables.rda")
+# load("processed/grnd_ldr_trte.rda")
+response <- common_response_variables
+independent <- grnd_ldr@meta$input$INDEPENDENT
 
-# models <- trainModel(x = orthoptera@data$input, 
-#                      response = response, independent = independent,
-#                      resamples = orthoptera_trte, n_var = seq(1,30,5),
-#                      response_nbr = c(1,2), resample_nbr = c(1,2),
-#                      mthd = "nnet")
-
-
-models <- trainModel(x = orthoptera@data$input, 
+models <- trainModel(x = grnd_ldr@data$input, 
                      response = response, independent = independent,
-                     resamples = orthoptera_trte, n_var = seq(1,30,2),
-                     response_nbr = seq(5),
-                     mthd = "avNNet")
+                     resamples = grnd_ldr_trte, n_var = seq(1,9,1),
+                     response_nbr = c(1:5), resample_nbr = c(1:10),
+                     mthd = "rf")
 
-
-models <- trainModel(x = orthoptera@data$input, 
-                     response = response, independent = independent,
-                     resamples = orthoptera_trte, n_var = seq(1,30,2),
-                     mthd = "avNNet")
-# save(models, file = "processed/models_avnnet.rda")
+# save(models, file = "gpm_models_rf_2015-11-26.rda")
+# load("gpm_models_rf_2015-11-26.rda")
 
 var_imp <- compVarImp(models)
 
 var_imp_plot <- plotVarImp(var_imp)
 
 var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
+
+tests <- compRegrTests(models)
+
+
+
+
+
+
+
 
 tests <- compContTests(models)
 
@@ -122,6 +104,6 @@ tstat_mean <- lapply(tests, function(x){
              HK_MEAN = mean(x$HK, na.rm = TRUE))
 })
 tstat_mean <- do.call("rbind", tstat_mean)
-tstat_mean <- merge(tstat_mean, prevalence, by = "RESPONSE")
+tstat_mean <- merge(tstat_mean, common_response, by = "RESPONSE")
 tstat_mean[order(tstat_mean$KAPPA_MEAN, decreasing = TRUE),]
 corrplot(cor(tstat_mean[, -1]))

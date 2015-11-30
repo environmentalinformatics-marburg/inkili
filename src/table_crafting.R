@@ -33,4 +33,4 @@ grnd_anm <- cbind(tec_crdnt_rdc, insct_SR_rdc[,c(6:ncol(insct_SR_rdc))], beet_SR
 #grnd_ldr_check <- cbind (ldr_stats, grnd_anm)
 grnd_ldr <- cbind (ldr_stats, grnd_anm)
 
-write.csv(grnd_ldr, file = "/media/aziegler/Volume/data_div/grnd_ldr.csv")
+write.csv(grnd_ldr, file = "/media/aziegler/Volume/data_div/grnd_ldr.csv", row.names = F)
