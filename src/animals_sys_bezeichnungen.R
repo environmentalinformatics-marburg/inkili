@@ -1,5 +1,5 @@
 inpath <- ("/media/aziegler/Volume/Bodendaten/data")
-outpath <- ("/media/aziegler/Volume/Bodendaten/data/output") 
+outpath <- ("/media/aziegler/Volume/data_div") 
 #Beispiel Nutzung: writeChar(prjNew,paste0(outPath,"/",layer,".prj"))
 setwd(inpath)
 
