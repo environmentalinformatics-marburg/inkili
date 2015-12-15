@@ -1,10 +1,11 @@
-setwd("/media/aziegler/Volume/data_div/")
+setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
 # Libraries --------------------------------------------------------------------
 library(gpm)
 library(grid)
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
+###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
 grnd_ldr <- read.table("grnd_ldr.csv", 
                          header = TRUE, sep = ",", dec = ".")
 
@@ -16,7 +17,8 @@ grnd_ldr <- grnd_ldr[-which(grnd_ldr$max_angl > 25),]
 grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
 meta_data <- createGPMMeta(grnd_ldr, type = "input",
                       selector = 1, response = c(24:57, 61:119), 
-                      independent = c(4:12), meta = c(2,3,13:23, 58:60))
+                      independent = c(4:6, 8:12), meta = c(2,3,7,13:23, 58:60))
+                      #independent = c(4:12), meta = c(2,3,13:23, 58:60))
 grnd_ldr <- gpm(grnd_ldr, meta_data)
 # save(grnd_ldr, file = "processed/grnd_ldr.rda")
 
@@ -75,8 +77,8 @@ models <- trainModel(x = grnd_ldr@data$input,
                      response_nbr = c(1:10), resample_nbr = c(1:100),
                      mthd = "rf", cv_nbr = 10)
 
-save(models, file = "gpm_models_rf_2015_12_08.rda")
-# load("gpm_models_rf_2015_12_08.rda")
+save(models, file = "gpm_models_rf_2015_12_14.rda")
+# load("gpm_models_rf_2015_12_08.rda") ###which model does what: data_div/gpm_models_readme.txt
 
 var_imp <- compVarImp(models)
 

@@ -39,6 +39,7 @@ lst_prd <- lapply(seq(lst_prd_lst), function(a){
   prd <- unlist(lst_prd_lst[[a]], recursive=F)
 })
 
+###plotten
 R2_all_prd <- lapply(seq(lst_rsp), function(a){
   smmry <- summary(lm(lst_prd[[a]] ~ lst_rsp[[a]]))
   #plot(lm(lst_prd[[a]] ~ lst_rsp[[a]]), main = response[a])
