@@ -40,10 +40,14 @@ lst_prd <- lapply(seq(lst_prd_lst), function(a){
 })
 
 ###plotten
-R2_all_prd <- lapply(seq(lst_rsp), function(a){
+R2_all <- lapply(seq(lst_rsp), function(a){
   smmry <- summary(lm(lst_prd[[a]] ~ lst_rsp[[a]]))
   #plot(lm(lst_prd[[a]] ~ lst_rsp[[a]]), main = response[a])
-  plot((lst_prd[[a]] ~ lst_rsp[[a]]), main = response[a])
-  #R2 <- smmry$r.squared
+  R2 <- smmry$r.squared
 })
+
+plot_all <- lapply(seq(lst_rsp), function(a){
+  plot((lst_prd[[a]] ~ lst_rsp[[a]]), main = response[a])
+})
+
 

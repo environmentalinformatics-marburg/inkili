@@ -60,15 +60,38 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
     ldr_qntl_50 <- ldr_qntl[[3]]
     ldr_qntl_75 <- ldr_qntl[[4]]
     ldr_qntl_100 <- ldr_qntl[[5]]
+    
+    ##if statement: if no lidar points are available: density calculation 
+    ##produces error - here those cases are sortet out
+    if (ldr_max_hght == "-Inf") {
+      cffnt_intcpt <- NA
+      cffnt_x <- NA
+      cffnt_x2 <- NA
+      cffnt_x3 <- NA
+      cffnt_x4 <- NA
+    } else {
+    ldr_dnst <- density(ldr_pnts_all$z)
+    dnst <- data.frame(cbind(x=ldr_dnst$x, y=ldr_dnst$y))
+    fnct_dnst <- glm(formula = y ~ x + I(x^2) + I(x^3) + I(x^4), data = dnst)
+    smmry_dnst <- summary(fnct_dnst)
+    cffnt_intcpt <- smmry_dnst$coefficients[1,1]
+    cffnt_x <- smmry_dnst$coefficients[2,1]
+    cffnt_x2 <- smmry_dnst$coefficients[3,1]
+    cffnt_x3 <- smmry_dnst$coefficients[4,1]
+    cffnt_x4 <- smmry_dnst$coefficients[5,1]
+    }
     return(list(max_hght = ldr_max_hght, sd = ldr_sd_hght, mdn = ldr_mdn_rtrn,
                 max_angl = ldr_max_angl, qntl_0 = ldr_qntl_0,
                 qntl_25 = ldr_qntl_25, qntl_50 = ldr_qntl_50,
-                qntl_75 = ldr_qntl_75, qntl_100 = ldr_qntl_100))
+                qntl_75 = ldr_qntl_75, qntl_100 = ldr_qntl_100, 
+                cffnt_intcpt = cffnt_intcpt, cffnt_x = cffnt_x, 
+                cffnt_x2 = cffnt_x2, cffnt_x3 = cffnt_x3, cffnt_x4 = cffnt_x4))
   })
   vars <- as.data.frame(t(ldr_sapply))
   ### unlist elements from sapply-loop
-  for (i in 1:ncol(vars)) {
-    vars[, i] <- unlist(vars[, i])}
+#   for (i in 1:ncol(vars)) {
+#     vars[, i] <- unlist(vars[, i])
+#     }
   ldr_var <- cbind(plotID, crdnt_x, crdnt_y, vars)
 
   return(ldr_var)

@@ -15,12 +15,17 @@ grnd_ldr <- grnd_ldr[-which(grnd_ldr$max_angl > 25),]
 ###
 
 grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
+# meta_data <- createGPMMeta(grnd_ldr, type = "input",
+#                       selector = 1, response = c(24:57, 61:119), 
+#                       independent = c(4:6, 8:12), meta = c(2,3,7,13:23, 58:60))
+#                       #independent = c(4:12), meta = c(2,3,13:23, 58:60))
 meta_data <- createGPMMeta(grnd_ldr, type = "input",
-                      selector = 1, response = c(24:57, 61:119), 
-                      independent = c(4:6, 8:12), meta = c(2,3,7,13:23, 58:60))
-                      #independent = c(4:12), meta = c(2,3,13:23, 58:60))
+                           selector = 1, response = c(24:57, 61:119), 
+                           independent = c(4:6, 8:12), meta = c(2,3,7,13:23, 58:60))
 grnd_ldr <- gpm(grnd_ldr, meta_data)
 # save(grnd_ldr, file = "processed/grnd_ldr.rda")
+
+
 
 
 # Select responses occuring at least across 20 unique selector values on average
