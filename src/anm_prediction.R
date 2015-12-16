@@ -20,8 +20,8 @@ grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
 #                       independent = c(4:6, 8:12), meta = c(2,3,7,13:23, 58:60))
 #                       #independent = c(4:12), meta = c(2,3,13:23, 58:60))
 meta_data <- createGPMMeta(grnd_ldr, type = "input",
-                           selector = 1, response = c(24:57, 61:119), 
-                           independent = c(4:6, 8:12), meta = c(2,3,7,13:23, 58:60))
+                           selector = 1, response = c(30:63, 67:403), 
+                           independent = c(4:6, 8:18), meta = c(2,3,7,20:30, 64:66))
 grnd_ldr <- gpm(grnd_ldr, meta_data)
 # save(grnd_ldr, file = "processed/grnd_ldr.rda")
 
@@ -82,7 +82,7 @@ models <- trainModel(x = grnd_ldr@data$input,
                      response_nbr = c(1:10), resample_nbr = c(1:100),
                      mthd = "rf", cv_nbr = 10)
 
-save(models, file = "gpm_models_rf_2015_12_14.rda")
+save(models, file = "gpm_models_rf_2015_12_16.rda")
 # load("gpm_models_rf_2015_12_08.rda") ###which model does what: data_div/gpm_models_readme.txt
 
 var_imp <- compVarImp(models)
