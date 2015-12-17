@@ -5,19 +5,22 @@
 #T = Trap;
 #beet = beetle;
 #beet_abbr = beetle abreviation
-#eco=ecology;
-#spl=samples
-#O= Ordnung; UK=Unterklasse; K=Klasse; TO=Teilordnung; UO=Unterordnung; F=Familie; x=Sonderfall
-#srt=sorted
-#trans=transponiert
-#clp=clip
-#abbr=abbreviation
-#agg=aggregate
-#tmp=temporary variable
-#anm=animals (includes beetles and other insct)
-#fin=final
-#rich=richnes
-#tec= technische informationen
+#eco = ecology;
+#spl = samples
+#O = Ordnung; UK=Unterklasse; K=Klasse; TO=Teilordnung; UO=Unterordnung; F=Familie; x=Sonderfall
+#srt = sorted
+#trans = transponiert
+#clp = clip
+#abbr = abbreviation
+#agg = aggregate
+#tmp = temporary variable
+#anm = animals (includes beetles and other insct)
+#fin = final
+#rich = richnes
+#tec = technische informationen
+#ttl = total
+#rdc = reduced (hier keine Ameisen und Collembola)
+
 library(base)
 library(inkili)
 
@@ -109,11 +112,20 @@ write.csv(all_SR, file=paste0(outpath, "/", "anm_SR.csv"), row.names=F)
 insct_SR_fin <- all_SR[, 1:38]
 colnames(insct_SR_fin)[1:6] <- c("plot_rnd", "plotID", "date_coll_insct", "rnd", "elevation", "total_insct")
 
-### create new collum with species richness for insct
+### create new collums with species richness for insct and total number of 
+###insects without ants and Collembola (Springschwänze)
 insct_SR_spec <- insct_SR_fin[,7:ncol(insct_SR_fin)]
 insct_SR_spec$rich_insct <- rowSums(insct_SR_spec>0)
-insct_SR_fin <- cbind(insct_SR_fin, insct_SR_spec$rich_insct)
-colnames(insct_SR_fin)[ncol(insct_SR_fin)] <- c("rich_insct")
+insct_SR_spec$ttl_insct_rdc <- rowSums(insct_SR_spec
+                                           [ -which(colnames(insct_SR_spec)%in% 
+                                                      c("Collembola", 
+                                                        "Hym_army_ants", 
+                                                        "Hym_ants", 
+                                                        "rich_insct"))])
+insct_SR_fin <- cbind(insct_SR_fin, insct_SR_spec$rich_insct, 
+                      insct_SR_spec$ttl_insct_rdc)
+colnames(insct_SR_fin)[ncol(insct_SR_fin)-1] <- c("rich_insct")
+colnames(insct_SR_fin)[ncol(insct_SR_fin)] <- c("ttl_insct_rdc")
 
 ###analog to the prior:
 ###create one table without the insect species
