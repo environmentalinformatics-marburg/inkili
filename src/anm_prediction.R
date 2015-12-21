@@ -15,10 +15,7 @@ grnd_ldr <- grnd_ldr[-which(grnd_ldr$max_angl > 25),]
 ###
 
 #grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
-# meta_data <- createGPMMeta(grnd_ldr, type = "input",
-#                       selector = 1, response = c(24:57, 61:119), 
-#                       independent = c(4:6, 8:12), meta = c(2,3,7,13:23, 58:60))
-#                       #independent = c(4:12), meta = c(2,3,13:23, 58:60))
+
 # meta_data <- createGPMMeta(grnd_ldr, type = "input",
 #                            selector = 1, response = c(30:63, 67:403), 
 #                            independent = c(4:6, 8:18), meta = c(2,3,7,20:30, 64:66))
@@ -32,8 +29,8 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                                           (which(colnames(grnd_ldr) == "rich_beet"))), 
                            independent = c((which(colnames(grnd_ldr) == "max_hght")):
                                              (which(colnames(grnd_ldr) == "mdn")), 
-                                           (which(colnames(grnd_ldr) == "sd_firsts")):
-                                             (which(colnames(grnd_ldr) == "cffnt_x4"))), 
+                                           (which(colnames(grnd_ldr) == "max_rtrn")):
+                                             (which(colnames(grnd_ldr) == "sd_per_rtrn_2"))), 
                            meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
                                     (which(colnames(grnd_ldr) == "crdnt_y")),
                                     (which(colnames(grnd_ldr) == "max_angl")),
@@ -41,6 +38,7 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                                       (which(colnames(grnd_ldr) == "y_pnt")),
                                     (which(colnames(grnd_ldr) == "plotID_beet")):
                                       (which(colnames(grnd_ldr) == "rnd_beet"))))
+
 
 grnd_ldr <- gpm(grnd_ldr, meta_data)
 # save(grnd_ldr, file = "processed/grnd_ldr.rda")
@@ -102,8 +100,8 @@ models <- trainModel(x = grnd_ldr@data$input,
                      response_nbr = c(1:11), resample_nbr = c(1:100),
                      mthd = "rf", cv_nbr = 10)
 
-#save(models, file = "gpm_models_rf_2015_12_17.rda")
-#load("gpm_models_rf_2015_12_17.rda") ###which model does what: data_div/gpm_models_readme.txt
+save(models, file = "gpm_models_rf_2015_12_21.rda")
+#load("gpm_models_rf_2015_12_21.rda") ###which model does what: data_div/gpm_models_readme.txt
 
 var_imp <- compVarImp(models)
 
