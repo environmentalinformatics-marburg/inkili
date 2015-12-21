@@ -103,7 +103,7 @@ models <- trainModel(x = grnd_ldr@data$input,
                      mthd = "rf", cv_nbr = 10)
 
 #save(models, file = "gpm_models_rf_2015_12_17.rda")
-# load("gpm_models_rf_2015_12_17.rda") ###which model does what: data_div/gpm_models_readme.txt
+#load("gpm_models_rf_2015_12_17.rda") ###which model does what: data_div/gpm_models_readme.txt
 
 var_imp <- compVarImp(models)
 
@@ -111,21 +111,29 @@ var_imp_plot <- plotVarImp(var_imp)
 
 var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
 
-tests <- compRegrTests(models, avrg = T)
+tests <- compRegrTests(models, avrg = TRUE)
+R2_df <- cbind(attributes(unique(tests$model_response))$levels, unique(tests$r_squared))
+colnames(R2_df) <- c("model_response", "R2")
 
-R2_mean <- lapply(seq(tests), function(x){
-  R2 <- mean(tests[[x]]$R2)
+
+plot_all <- lapply(seq(response), function(a){
+  plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
+         tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
 })
 
-R2_df <- as.data.frame(cbind(unlist(R2_mean)), row.names = response)
-colnames(R2_df) <- "R2"
+#plot single plots
+sngl_nm_rspns <- "Acari"
+plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~ 
+       tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
 
 #write.csv(R2_df, file = "2015_12_08_R2_df.csv")
-
-
-
 # 
-# 
+
+
+
+
+
+
 # tests <- compContTests(models)
 # 
 # tstat_mean <- lapply(tests, function(x){

@@ -20,6 +20,7 @@
 #dnst=density function
 #mdn = median
 #qntl= quantile
+#cnt = count
 
 #load libraries
 library(rgdal)
@@ -61,7 +62,7 @@ write.table(tec_crdnt, file = paste0(outpath, "/", "tec_crdnt.csv"),
 
 
 ldr_stats_all <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
-                       crdnt_y = tec_crdnt$y_pnt, radius = 40)
+                       crdnt_y = tec_crdnt$y_pnt, radius = 20)
 
 ldr_stats <- rdc_by_ldr(dataframe_plts = ldr_stats_all, dataframe_crdnt = tec_crdnt)
 
@@ -69,17 +70,17 @@ ldr_stats <- rdc_by_ldr(dataframe_plts = ldr_stats_all, dataframe_crdnt = tec_cr
 write.table(ldr_stats, file=paste0(outpath, "/", "ldr_stats.csv"),
             row.names=F, sep = ",")
 
-# 
+#
 # # ###############testing request for single plot##################################
-# 
-# 
+#
+#
 # ###db aufrufen (von Stephan Wöllauer)
-# 
+#
 # db_url <- "http://137.248.191.249:8081/pointdb"
 # pointdb <- PointDB$new(db_url)
-# 
+#
 # #function to get lidar points to a provided x and y coordinate
-# 
+#
 # func_ldr <- function(utm_x, utm_y, r){
 #   call <- paste0("pointdb$query_radius_rect(", "x=", utm_x, ",y=", utm_y,
 #                  ",radius=", r, ")")
@@ -114,7 +115,7 @@ write.table(ldr_stats, file=paste0(outpath, "/", "ldr_stats.csv"),
 # #sngl_qntl_100 <- qntl[[5]]
 # sngl_dnst <- density(sngl_pnts_all$z)
 # plot3d(sngl_pnts_all$x, sngl_pnts_all$y, sngl_pnts_all$z)
-# 
+#
 # ####################testing####################################################
 # #
 # # df <- pointdb$query_radius_rect(x=322090, y=9635630, radius=200)
