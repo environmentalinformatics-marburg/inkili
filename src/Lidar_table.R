@@ -74,56 +74,56 @@ write.table(ldr_stats, file=paste0(outpath, "/", "ldr_stats.csv"),
 # # ###############testing request for single plot##################################
 #
 #
-# ###db aufrufen (von Stephan Wöllauer)
+###db aufrufen (von Stephan Wöllauer)
+
+db_url <- "http://137.248.191.249:8081/pointdb"
+pointdb <- PointDB$new(db_url)
+
+#function to get lidar points to a provided x and y coordinate
+
+func_ldr <- function(utm_x, utm_y, r){
+  call <- paste0("pointdb$query_radius_rect(", "x=", utm_x, ",y=", utm_y,
+                 ",radius=", r, ")")
+  all_points <- eval(parse(text = call))
+  return(all_points)
+}
+r= 40
+sngl_pnts_all <- func_ldr(tec_crdnt[which(tec_crdnt$plot_rnd %in% "sav5_aug2011"),
+                                    'x_pnt'],
+                          tec_crdnt[which(tec_crdnt$plot_rnd %in% "sav5_aug2011"),
+                                    'y_pnt'], r)
+sngl_max_hght <- max(sngl_pnts_all$z)
+sngl_min_hght <- min(sngl_pnts_all$z)
+sngl_sd_hght <- sd(sngl_pnts_all$z)
+sngl_mdn_rtrn <- median(sngl_pnts_all$returns)
+sngl_max_angl <- max(abs(sngl_pnts_all$scanAngleRank))
+#Quantile berechnen #von Stefan
+data <- sngl_pnts_all$z
+qmin <- quantile(data, 0.01)
+qmax <- quantile(data, 0.99)
+data <- data[qmin<=data]
+data <- data[data<=qmax]
+# convert from values a.s.l. to "treeheight"
+#Problem: height above lowest point of lidarpoints
+#at slope Plots this might be a problem
+data <- data - qmin
+qntl <- quantile(data, probs=seq(0,1,0.25))
+#sngl_qntl_0 <- qntl[[1]]
+#sngl_qntl_25 <- qntl[[2]]
+#sngl_qntl_50 <- qntl[[3]]
+#sngl_qntl_75 <- qntl[[4]]
+#sngl_qntl_100 <- qntl[[5]]
+sngl_dnst <- density(sngl_pnts_all$z)
+plot3d(sngl_pnts_all$x, sngl_pnts_all$y, sngl_pnts_all$z)
+
+####################testing####################################################
 #
-# db_url <- "http://137.248.191.249:8081/pointdb"
-# pointdb <- PointDB$new(db_url)
+# df <- pointdb$query_radius_rect(x=322090, y=9635630, radius=200)
+# #df <- pointdb$query_radius_rect(x=308285.0, y=9662407, radius=40)
 #
-# #function to get lidar points to a provided x and y coordinate
+# ######################################################################
 #
-# func_ldr <- function(utm_x, utm_y, r){
-#   call <- paste0("pointdb$query_radius_rect(", "x=", utm_x, ",y=", utm_y,
-#                  ",radius=", r, ")")
-#   all_points <- eval(parse(text = call))
-#   return(all_points)
-# }
-# r= 40
-# sngl_pnts_all <- func_ldr(tec_crdnt[which(tec_crdnt$plot_rnd %in% "sav5_aug2011"),
-#                                     'x_pnt'],
-#                           tec_crdnt[which(tec_crdnt$plot_rnd %in% "sav5_aug2011"),
-#                                     'y_pnt'], r)
-# sngl_max_hght <- max(sngl_pnts_all$z)
-# sngl_min_hght <- min(sngl_pnts_all$z)
-# sngl_sd_hght <- sd(sngl_pnts_all$z)
-# sngl_mdn_rtrn <- median(sngl_pnts_all$returns)
-# sngl_max_angl <- max(abs(sngl_pnts_all$scanAngleRank))
-# #Quantile berechnen #von Stefan
-# data <- sngl_pnts_all$z
-# qmin <- quantile(data, 0.01)
-# qmax <- quantile(data, 0.99)
-# data <- data[qmin<=data]
-# data <- data[data<=qmax]
-# # convert from values a.s.l. to "treeheight"
-# #Problem: height above lowest point of lidarpoints
-# #at slope Plots this might be a problem
-# data <- data - qmin
-# qntl <- quantile(data, probs=seq(0,1,0.25))
-# #sngl_qntl_0 <- qntl[[1]]
-# #sngl_qntl_25 <- qntl[[2]]
-# #sngl_qntl_50 <- qntl[[3]]
-# #sngl_qntl_75 <- qntl[[4]]
-# #sngl_qntl_100 <- qntl[[5]]
-# sngl_dnst <- density(sngl_pnts_all$z)
-# plot3d(sngl_pnts_all$x, sngl_pnts_all$y, sngl_pnts_all$z)
 #
-# ####################testing####################################################
-# #
-# # df <- pointdb$query_radius_rect(x=322090, y=9635630, radius=200)
-# # #df <- pointdb$query_radius_rect(x=308285.0, y=9662407, radius=40)
-# #
-# # ######################################################################
-# #
-# #
 # #
 # # ###first try to do apply-loop as an l-apply, so that the density function and
 # # #the quantiles are kept properly in the list. Loop works, but how can I get the

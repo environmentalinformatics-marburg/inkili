@@ -94,13 +94,21 @@ independent <- grnd_ldr@meta$input$INDEPENDENT
 
 #grnd_ldr@data
 
-models <- trainModel(x = grnd_ldr@data$input,
+models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
                      response_nbr = c(1:11), resample_nbr = c(1:100),
                      mthd = "rf", cv_nbr = 10)
 
-save(models, file = "gpm_models_rf_2015_12_21.rda")
+models <- trainModel(x = grnd_ldr,
+                     response = response, independent = independent,
+                     resamples = grnd_ldr_trte, n_var = seq(1,9,1),
+                     response_nbr = c(1:2), resample_nbr = c(1:2),
+                     mthd = "rf", cv_nbr = 5)
+
+
+
+#save(models, file = "gpm_models_rf_2015_12_21.rda")
 #load("gpm_models_rf_2015_12_21.rda") ###which model does what: data_div/gpm_models_readme.txt
 
 var_imp <- compVarImp(models)
@@ -109,11 +117,15 @@ var_imp_plot <- plotVarImp(var_imp)
 
 var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
 
-tests <- compRegrTests(models, avrg = TRUE)
-R2_df <- cbind(attributes(unique(tests$model_response))$levels, unique(tests$r_squared))
-colnames(R2_df) <- c("model_response", "R2")
+tests <- compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
+                       sub_selectors = c(1,3), details = TRUE)
 
 
+compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
+              sub_selectors = c(1,3), details = FALSE)
+
+#write.csv(R2_df, file = "2015_12_14_R2_df.csv", row.names = F)
+#R2_df_21 <- read.table(file = "2015_12_21_R2_df.csv", header= T, sep = ",")
 plot_all <- lapply(seq(response), function(a){
   plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
          tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
@@ -124,7 +136,7 @@ sngl_nm_rspns <- "Acari"
 plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~ 
        tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
 
-#write.csv(R2_df, file = "2015_12_08_R2_df.csv")
+
 # 
 
 
