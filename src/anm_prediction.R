@@ -34,6 +34,7 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                            meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
                                     (which(colnames(grnd_ldr) == "crdnt_y")),
                                     (which(colnames(grnd_ldr) == "max_angl")),
+                                    (which(colnames(grnd_ldr) == "ldr_radius")),
                                     (which(colnames(grnd_ldr) == "plot_rnd")):
                                       (which(colnames(grnd_ldr) == "y_pnt")),
                                     (which(colnames(grnd_ldr) == "plotID_beet")):
@@ -43,16 +44,16 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
 grnd_ldr <- gpm(grnd_ldr, meta_data)
 # save(grnd_ldr, file = "processed/grnd_ldr.rda")
 
-
-
-
 # Select responses occuring at least across 20 unique selector values on average
 # load("processed/grnd_ldr.rda")
 plotid <- grnd_ldr@data$input[,grnd_ldr@meta$input$SELECTOR]
 observations <- grnd_ldr@data$input[, grnd_ldr@meta$input$RESPONSE]
+min_occ <- 0
+min_rsmpl <- 100
+min_thv <- 1
 min_occurence <- minimumOccurence(x = observations, selector = plotid,
-                                  occurence = 0, 
-                                  resample = 100, thv = 20)
+                                  occurence = min_occ, 
+                                  resample = min_rsmpl, thv = min_thv)
 common_response_variables <- min_occurence[[1]]
 common_response <- data.frame(min_occurence[[2]])
 common_response$RESPONSE <- rownames(common_response)
@@ -120,8 +121,14 @@ tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE,
 
 # compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
 #               sub_selectors = c(1,3), details = FALSE)
-info <- append(paste0 ("response_", response), paste0("independent_", independent))
-save(models, tests, file = "gpm_models_rf_2015_12_22.rda")
+info <- append(paste0 ("response_", response),  ##########################################wie geht das schlauer?
+               paste0("independent_", independent))
+info <- append(info, 
+               paste0("radius_ldr_", grnd_ldr@data$input$ldr_radius[1]))
+info <- append(info, 
+               paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv))
+
+save(models, tests, info, file = "gpm_models_rf_2016_01_06.rda")
 #load("gpm_models_rf_2015_12_22.rda") ###which model does what: data_div/gpm_models_readme.txt
 
 plot_all <- lapply(seq(response), function(a){
