@@ -131,7 +131,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
                 qntl_100 = ldr_qntl_100, cffnt_intcpt = cffnt_intcpt,
                 cffnt_x = cffnt_x, cffnt_x2 = cffnt_x2, cffnt_x3 = cffnt_x3,
                 cffnt_x4 = cffnt_x4, sd_per_rtrn_1 = sd_per_rtrn_1,
-                sd_per_rtrn_1 = sd_per_rtrn_1, sd_per_rtrn_2 = sd_per_rtrn_2))
+                sd_per_rtrn_1 = sd_per_rtrn_1, sd_per_rtrn_2 = sd_per_rtrn_2, ldr_radius = radius))
   })
   vars <- as.data.frame(t(ldr_sapply))
   ################still to work on

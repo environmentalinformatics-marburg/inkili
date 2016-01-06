@@ -60,7 +60,6 @@ tec_crdnt <- tec_crdnt_mrg[order(tec_crdnt_mrg$plot_rnd),]
 write.table(tec_crdnt, file = paste0(outpath, "/", "tec_crdnt.csv"),
             row.names=F, sep = ",")
 
-
 ldr_stats_all <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
                        crdnt_y = tec_crdnt$y_pnt, radius = 20)
 
