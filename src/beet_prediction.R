@@ -9,45 +9,48 @@ library(grid)
 grnd_ldr <- read.table("grnd_ldr.csv", 
                          header = TRUE, sep = ",", dec = ".")
 
-
+beet_ldr <- grnd_ldr[,c((which(colnames(grnd_ldr) == "max_hght")):(which(colnames(grnd_ldr) == "ldr_radius")), 
+                        (which(colnames(grnd_ldr) == "plotID_beet")):(which(colnames(grnd_ldr) == "rich_beet")), 
+                        (which(colnames(grnd_ldr) == "polename")):(which(colnames(grnd_ldr) == "y_pnt")))]
+  
 ###filtering plots by scan angle
-grnd_ldr <- grnd_ldr[which(grnd_ldr$max_angl <= 25),]
+beet_ldr <- beet_ldr[which(grnd_ldr$max_angl <= 25),]
 ###
-
+beet_ldr <- beet_ldr[complete.cases(beet_ldr), ]
 #grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
 
 # meta_data <- createGPMMeta(grnd_ldr, type = "input",
 #                            selector = 1, response = c(30:63, 67:403), 
 #                            independent = c(4:6, 8:18), meta = c(2,3,7,20:30, 64:66))
-meta_data <- createGPMMeta(grnd_ldr, type = "input",
+meta_data <- createGPMMeta(beet_ldr, type = "input",
                            selector = 1, 
                            #response and independent from "colname" to "colname"
                            #- better handling, when new columns are made
-                           response = c((which(colnames(grnd_ldr) == "total_insct")):
-                                          (which(colnames(grnd_ldr) == "ttl_insct_rdc")),
-                                        (which(colnames(grnd_ldr) == "Agri0001")):
-                                          (which(colnames(grnd_ldr) == "rich_beet"))), 
-                           independent = c((which(colnames(grnd_ldr) == "max_hght")):
-                                             (which(colnames(grnd_ldr) == "mdn")), 
-                                           (which(colnames(grnd_ldr) == "max_rtrn")):
-                                             (which(colnames(grnd_ldr) == "sd_per_rtrn_2"))), 
-                           meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
-                                    (which(colnames(grnd_ldr) == "crdnt_y")),
-                                    (which(colnames(grnd_ldr) == "max_angl")),
-                                    (which(colnames(grnd_ldr) == "ldr_radius")),
-                                    (which(colnames(grnd_ldr) == "plot_rnd")):
-                                      (which(colnames(grnd_ldr) == "y_pnt")),
-                                    (which(colnames(grnd_ldr) == "plotID_beet")):
-                                      (which(colnames(grnd_ldr) == "rnd_beet"))))
+                           response = c((which(colnames(beet_ldr) == "total_insct")):
+                                          (which(colnames(beet_ldr) == "ttl_insct_rdc")),
+                                        (which(colnames(beet_ldr) == "Agri0001")):
+                                          (which(colnames(beet_ldr) == "rich_beet"))), 
+                           independent = c((which(colnames(beet_ldr) == "max_hght")):
+                                             (which(colnames(beet_ldr) == "mdn")), 
+                                           (which(colnames(beet_ldr) == "max_rtrn")):
+                                             (which(colnames(beet_ldr) == "sd_per_rtrn_2"))), 
+                           meta = c((which(colnames(beet_ldr) == "crdnt_x")),
+                                    (which(colnames(beet_ldr) == "crdnt_y")),
+                                    (which(colnames(beet_ldr) == "max_angl")),
+                                    (which(colnames(beet_ldr) == "ldr_radius")),
+                                    (which(colnames(beet_ldr) == "plot_rnd")):
+                                      (which(colnames(beet_ldr) == "y_pnt")),
+                                    (which(colnames(beet_ldr) == "plotID_beet")):
+                                      (which(colnames(beet_ldr) == "rnd_beet"))))
 
-grnd_ldr_df <- grnd_ldr
-grnd_ldr <- gpm(grnd_ldr, meta_data)
+beet_ldr_df <- beet_ldr
+beet_ldr <- gpm(beet_ldr, meta_data)
 # save(grnd_ldr, file = "processed/grnd_ldr.rda")
 
 # Select responses occuring at least across 20 unique selector values on average
 # load("processed/grnd_ldr.rda")
-plotid <- grnd_ldr@data$input[,grnd_ldr@meta$input$SELECTOR]
-observations <- grnd_ldr@data$input[, grnd_ldr@meta$input$RESPONSE]
+plotid <- beet_ldr@data$input[,beet_ldr@meta$input$SELECTOR]
+observations <- beet_ldr@data$input[, beet_ldr@meta$input$RESPONSE]
 min_occ <- 0
 min_rsmpl <- 100
 min_thv <- 20 ##################################################standardwert hier war 20
@@ -64,46 +67,46 @@ rownames(common_response) <- NULL
 
 
 # Compile model evaluation dataset ---------------------------------------------
-grnd_ldr_resamples <- resamplingsByVariable(x = grnd_ldr@data$input, 
+beet_ldr_resamples <- resamplingsByVariable(x = beet_ldr@data$input, 
                                               selector = plotid, 
                                               resample = 100)
-# save(grnd_ldr_resamples, file = "gpm_grnd_ldr_resamples.rda")
+# save(beet_ldr_resamples, file = "gpm_beet_ldr_resamples.rda")
 
 
 
 
 # Split dataset into testing and training samples for each individual species --
-# load("processed/grnd_ldr.rda")
+# load("processed/beet_ldr.rda")
 # load("processed/common_response_variables.rda")
-# load("processed/grnd_ldr_resamples.rda")
+# load("processed/beet_ldr_resamples.rda")
 col_response <- common_response_variables
-grnd_ldr_trte <- splitMultResp(x = grnd_ldr@data$input, 
+beet_ldr_trte <- splitMultResp(x = beet_ldr@data$input, 
                                  response = col_response,
-                                 resamples = grnd_ldr_resamples)
-# save(grnd_ldr_trte, file = "gpm_grnd_ldr_trte.rda")
-# grnd_ldr_trte[[10]][[2]]$testing$SAMPLES #rownumber
-# grnd_ldr@data$input[grnd_ldr_trte[[10]][[100]]$testing$SAMPLES, grnd_ldr_trte[[10]][[100]]$testing$RESPONSE] #value
+                                 resamples = beet_ldr_resamples)
+# save(beet_ldr_trte, file = "gpm_beet_ldr_trte.rda")
+# beet_ldr_trte[[10]][[2]]$testing$SAMPLES #rownumber
+# beet_ldr@data$input[beet_ldr_trte[[10]][[100]]$testing$SAMPLES, beet_ldr_trte[[10]][[100]]$testing$RESPONSE] #value
 
 
 
 # Evaluate prediction models ---------------------------------------------------
-# load("processed/grnd_ldr.rda")
+# load("processed/beet_ldr.rda")
 # load("processed/common_response_variables.rda")
-# load("processed/grnd_ldr_trte.rda")
+# load("processed/beet_ldr_trte.rda")
 response <- common_response_variables
-independent <- grnd_ldr@meta$input$INDEPENDENT
+independent <- beet_ldr@meta$input$INDEPENDENT
 
 
 
-models <- trainModel(x = grnd_ldr,
+models <- trainModel(x = beet_ldr,
                      response = response, independent = independent,
-                     resamples = grnd_ldr_trte, n_var = seq(1,9,1),
+                     resamples = beet_ldr_trte, n_var = seq(1,9,1),
                      response_nbr = c(7), resample_nbr = c(55), ###bei min_occ_thv = 20 stand hier: (1:11); (1:100)
                      mthd = "rf", cv_nbr = 10)
 
-# models <- trainModel(x = grnd_ldr,
+# models <- trainModel(x = beet_ldr,
 #                      response = response, independent = independent,
-#                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
+#                      resamples = beet_ldr_trte, n_var = seq(1,9,1),
 #                      response_nbr = c(1:2), resample_nbr = c(1:2),
 #                      mthd = "rf", cv_nbr = 5)
 
@@ -118,7 +121,7 @@ var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
 tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE, 
                        sub_selectors = c(1,3), details = TRUE)
 
-#tests_pairs <- aggregate(tests, by = list(tests$pairs), FUN = function(x){x[1]})
+tests_pairs <- aggregate(tests, by = list(tests$pairs), FUN = function(x){x[1]})
 tests_agg <- aggregate(tests, by=list(tests$model_response, tests$model_selector), FUN="mean")
 tests_srt <- tests_agg[with(tests_agg, order(tests_agg$r_squared, decreasing = T)), ]
 
@@ -127,7 +130,7 @@ tests_srt <- tests_agg[with(tests_agg, order(tests_agg$r_squared, decreasing = T
 info <- append(paste0 ("response_", response),  ##########################################wie geht das schlauer?
                paste0("independent_", independent))
 info <- append(info, 
-               paste0("radius_ldr_", grnd_ldr@data$input$ldr_radius[1]))
+               paste0("radius_ldr_", beet_ldr@data$input$ldr_radius[1]))
 info <- append(info, 
                paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv))
 
