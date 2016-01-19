@@ -9,14 +9,21 @@ library(grid)
 grnd_ldr <- read.table("grnd_ldr.csv", 
                          header = TRUE, sep = ",", dec = ".")
 
-beet_ldr <- grnd_ldr[,c((which(colnames(grnd_ldr) == "max_hght")):(which(colnames(grnd_ldr) == "ldr_radius")), 
-                        (which(colnames(grnd_ldr) == "plotID_beet")):(which(colnames(grnd_ldr) == "rich_beet")), 
-                        (which(colnames(grnd_ldr) == "polename")):(which(colnames(grnd_ldr) == "y_pnt")))]
+beet_ldr <- grnd_ldr[,c((which(colnames(grnd_ldr) == "polename")):(which(colnames(grnd_ldr) == "y_pnt")), 
+                        (which(colnames(grnd_ldr) == "max_hght")):(which(colnames(grnd_ldr) == "ldr_radius")), 
+                        (which(colnames(grnd_ldr) == "plotID_beet")):(which(colnames(grnd_ldr) == "rich_beet")))]
   
 ###filtering plots by scan angle
 beet_ldr <- beet_ldr[which(grnd_ldr$max_angl <= 25),]
 ###
 beet_ldr <- beet_ldr[complete.cases(beet_ldr), ]
+beet_ldr <- beet_ldr[,c((which(colnames(beet_ldr) == "plotID_beet")):
+            (which(colnames(beet_ldr) == "rnd_beet")), 
+          (which(colnames(beet_ldr) == "polename")):
+            (which(colnames(beet_ldr) == "ldr_radius")), 
+          (which(colnames(beet_ldr) == "Agri0001")):
+            (which(colnames(beet_ldr) == "rich_beet")))]
+
 #grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
 
 # meta_data <- createGPMMeta(grnd_ldr, type = "input",
@@ -26,22 +33,14 @@ meta_data <- createGPMMeta(beet_ldr, type = "input",
                            selector = 1, 
                            #response and independent from "colname" to "colname"
                            #- better handling, when new columns are made
-                           response = c((which(colnames(beet_ldr) == "total_insct")):
-                                          (which(colnames(beet_ldr) == "ttl_insct_rdc")),
-                                        (which(colnames(beet_ldr) == "Agri0001")):
+                           response = c((which(colnames(beet_ldr) == "Agri0001")):
                                           (which(colnames(beet_ldr) == "rich_beet"))), 
                            independent = c((which(colnames(beet_ldr) == "max_hght")):
                                              (which(colnames(beet_ldr) == "mdn")), 
                                            (which(colnames(beet_ldr) == "max_rtrn")):
                                              (which(colnames(beet_ldr) == "sd_per_rtrn_2"))), 
-                           meta = c((which(colnames(beet_ldr) == "crdnt_x")),
-                                    (which(colnames(beet_ldr) == "crdnt_y")),
-                                    (which(colnames(beet_ldr) == "max_angl")),
-                                    (which(colnames(beet_ldr) == "ldr_radius")),
-                                    (which(colnames(beet_ldr) == "plot_rnd")):
-                                      (which(colnames(beet_ldr) == "y_pnt")),
-                                    (which(colnames(beet_ldr) == "plotID_beet")):
-                                      (which(colnames(beet_ldr) == "rnd_beet"))))
+                           meta = c((which(colnames(beet_ldr) == "date_coll_beet")):
+                                    (which(colnames(beet_ldr) == "y_pnt"))))
 
 beet_ldr_df <- beet_ldr
 beet_ldr <- gpm(beet_ldr, meta_data)
@@ -53,7 +52,7 @@ plotid <- beet_ldr@data$input[,beet_ldr@meta$input$SELECTOR]
 observations <- beet_ldr@data$input[, beet_ldr@meta$input$RESPONSE]
 min_occ <- 0
 min_rsmpl <- 100
-min_thv <- 20 ##################################################standardwert hier war 20
+min_thv <- 2 ##################################################standardwert hier war 20
 min_occurence <- minimumOccurence(x = observations, selector = plotid,
                                   occurence = min_occ, 
                                   resample = min_rsmpl, thv = min_thv)

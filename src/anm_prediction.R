@@ -94,7 +94,7 @@ response <- common_response_variables
 independent <- grnd_ldr@meta$input$INDEPENDENT
 
 
-
+#load("gpm_models_rf_2015_12_22.rda") ###which model does what: data_div/gpm_models_readme.txt
 models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
@@ -120,6 +120,27 @@ tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE,
 
 #tests_pairs <- aggregate(tests, by = list(tests$pairs), FUN = function(x){x[1]})
 tests_agg <- aggregate(tests, by=list(tests$model_response, tests$model_selector), FUN="mean")
+
+#create a list where all landuse types are rearranged in less groups
+agg_lnduse <- as.data.frame(unique(tests$model_selector))
+colnames(agg_lnduse) <- c("plot_lnduse")
+agg_lnduse$plot_lnduse <- as.character(agg_lnduse$plot_lnduse)
+agg_lnduse$lnduse_sum <- agg_lnduse$plot_lnduse
+agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "flm" | 
+                        agg_lnduse$plot_lnduse == "foc" ] <- "forest"
+agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "fod" ] <- "forest_disturbed"
+
+
+tests$model_selector <- as.character(tests$model_selector)
+tests$model_select_sum <- tests$model_selector
+blub <- lapply(seq(nrow(tests)), function(z) {
+#   if (tests[z, 'model_selector'] == "flm") {
+#   tests[z, 'model_select_sum'] <- "forest"
+  tests[z, 'model_selector' == "flm"] <- "forest"
+})
+
+
+
 tests_srt <- tests_agg[with(tests_agg, order(tests_agg$r_squared, decreasing = T)), ]
 
 # compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
