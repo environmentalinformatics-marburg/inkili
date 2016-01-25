@@ -1,3 +1,6 @@
+###abbreviations
+#sum = summarized
+
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
 # Libraries --------------------------------------------------------------------
@@ -93,7 +96,7 @@ grnd_ldr_trte <- splitMultResp(x = grnd_ldr@data$input,
 response <- common_response_variables
 independent <- grnd_ldr@meta$input$INDEPENDENT
 
-
+######model calculation####################################################
 #load("gpm_models_rf_2015_12_22.rda") ###which model does what: data_div/gpm_models_readme.txt
 models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
@@ -101,13 +104,20 @@ models <- trainModel(x = grnd_ldr,
                      response_nbr = c(7), resample_nbr = c(55), ###bei min_occ_thv = 20 stand hier: (1:11); (1:100)
                      mthd = "rf", cv_nbr = 10)
 
-# models <- trainModel(x = grnd_ldr,
-#                      response = response, independent = independent,
-#                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
-#                      response_nbr = c(1:2), resample_nbr = c(1:2),
-#                      mthd = "rf", cv_nbr = 5)
+# compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
+#               sub_selectors = c(1,3), details = FALSE)
+info <- append(paste0 ("response_", response),  ##########################################wie geht das schlauer?
+               paste0("independent_", independent))
+info <- append(info, 
+               paste0("radius_ldr_", grnd_ldr@data$input$ldr_radius[1]))
+info <- append(info, 
+               paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv)) ######außerdem noch datum des modelllaufs einfügen
 
+save(models, tests, info, file = "gpm_models_rf_2016_01_06.rda")
+#load("gpm_models_rf_2015_12_22.rda") ###which model does what: data_div/gpm_models_readme.txt
+####################################################################################
 
+###testing###
 
 var_imp <- compVarImp(models)
 
@@ -121,40 +131,32 @@ tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE,
 #tests_pairs <- aggregate(tests, by = list(tests$pairs), FUN = function(x){x[1]})
 tests_agg <- aggregate(tests, by=list(tests$model_response, tests$model_selector), FUN="mean")
 
-#create a list where all landuse types are rearranged in less groups
-agg_lnduse <- as.data.frame(unique(tests$model_selector))
-colnames(agg_lnduse) <- c("plot_lnduse")
-agg_lnduse$plot_lnduse <- as.character(agg_lnduse$plot_lnduse)
-agg_lnduse$lnduse_sum <- agg_lnduse$plot_lnduse
-agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "flm" | 
-                        agg_lnduse$plot_lnduse == "foc" ] <- "forest"
-agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "fod" ] <- "forest_disturbed"
+# #create a list where all landuse types are rearranged in less groups
+# agg_lnduse <- as.data.frame(unique(tests$model_selector))
+# colnames(agg_lnduse) <- c("plot_lnduse")
+# agg_lnduse$plot_lnduse <- as.character(agg_lnduse$plot_lnduse)
+# agg_lnduse$lnduse_sum <- agg_lnduse$plot_lnduse
+# agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "flm" | 
+#                         agg_lnduse$plot_lnduse == "foc" ] <- "forest"
+# agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "fod" ] <- "forest_disturbed"
 
 
 tests$model_selector <- as.character(tests$model_selector)
 tests$model_select_sum <- tests$model_selector
-blub <- lapply(seq(nrow(tests)), function(z) {
-#   if (tests[z, 'model_selector'] == "flm") {
-#   tests[z, 'model_select_sum'] <- "forest"
-  tests[z, 'model_selector' == "flm"] <- "forest"
-})
+tests$model_select_sum[tests$model_select_sum == "flm" | 
+                         tests$model_select_sum == "foc"] <- "forest"
+tests$model_select_sum[tests$model_select_sum == "fod"] <- "forest_disturbed"
 
+tests_agg_sum <- aggregate(tests, by=list(tests$model_response, tests$model_select_sum), FUN="mean")
 
+tests_heat <- tests_agg_sum
 
+#tests sorted after highest R2
 tests_srt <- tests_agg[with(tests_agg, order(tests_agg$r_squared, decreasing = T)), ]
+tests_srt_sum <- tests_agg_sum[with(tests_agg_sum, order(tests_agg_sum$r_squared, decreasing = T)), ]
 
-# compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
-#               sub_selectors = c(1,3), details = FALSE)
-info <- append(paste0 ("response_", response),  ##########################################wie geht das schlauer?
-               paste0("independent_", independent))
-info <- append(info, 
-               paste0("radius_ldr_", grnd_ldr@data$input$ldr_radius[1]))
-info <- append(info, 
-               paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv))
-
-save(models, tests, info, file = "gpm_models_rf_2016_01_06.rda")
-#load("gpm_models_rf_2015_12_22.rda") ###which model does what: data_div/gpm_models_readme.txt
-
+#write.csv(tests_srt, file= "tests_srt_REPLACEWITHDATE.csv", row.names=F, sep = ",")
+#write.csv(tests_srt_sum, file= "tests_srt_sum_15_12_22.csv", row.names=F, sep = ",")
 
 plot_all <- lapply(seq(response), function(a){
   plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
@@ -174,11 +176,20 @@ plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)]
 abline(sngl_reg)
 
 #plot number of pairs to r²
-
 pair_r2_reg <- lm(tests$r_squared ~ tests$pairs)
 plot(tests$r_squared ~ tests$pairs)
 abline(pair_r2_reg)
 summary(pair_r2_reg)
+
+pair_agg_r2_reg <- lm(tests_agg$r_squared ~ tests_agg$pairs)
+plot(tests_agg$r_squared ~ tests_agg$pairs)
+abline(pair_agg_r2_reg)
+summary(pair_agg_r2_reg)
+
+pair_agg_sum_r2_reg <- lm(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
+plot(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
+abline(pair_agg_sum_r2_reg)
+summary(pair_agg_sum_r2_reg)
 
 #plot histogram of pairs
 hist(tests$pairs, breaks=50) # breaks = 5 als Abbildung
