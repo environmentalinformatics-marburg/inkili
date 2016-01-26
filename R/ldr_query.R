@@ -46,7 +46,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
     ldr_max_angl <- max(abs(ldr_pnts_all$scanAngleRank))
 
 
-    # calculate quantiles # changed: from Stefan
+    # calculate quantiles # changed: from Stephan
     data <- ldr_pnts_all$z
     qmin <- quantile(data, 0.01)
     qmax <- quantile(data, 0.99)

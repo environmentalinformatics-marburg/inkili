@@ -1,3 +1,5 @@
+library(rasterVis)
+
 ######plotting "Levelplot of R2 of Species by landuse"###
 species <- tests_agg_sum[, 1]
 species <- unique(species)
@@ -21,7 +23,8 @@ rst_rsq <- raster(dat_rsq, xmn = 0.5, xmx = 11.5,
 
 clr <- colorRampPalette(brewer.pal(9, "YlOrRd"))
 levelplot(rst_rsq, scales = list(x = list(at = 1:11, labels = as.character(species)), 
-                                 y = list(at = 1:7, labels = as.character(landuse))), 
+                                 y = list(at = 7:1, labels = as.character(landuse))), ################sorum stimmt Plot, aber warum ist das hier umgedreht? 
+          
           margin = FALSE, 
           col.regions = clr(101), 
           at = seq(0, 0.35, 0.005))

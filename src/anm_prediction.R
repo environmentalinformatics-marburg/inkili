@@ -162,6 +162,10 @@ plot_all <- lapply(seq(response), function(a){
   plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
          tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
 })
+
+tests_min_agg_land <- tests_agg_sum
+aggregate(tests, by=list(tests$model_response, tests$model_selector), FUN="mean")
+  
 ######################################################################################
 ###different stuff from testing phase###
 ######################################################################################
