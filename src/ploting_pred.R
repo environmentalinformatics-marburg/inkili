@@ -1,5 +1,12 @@
 library(rasterVis)
 
+# #pred ~ resp
+# plot_all <- lapply(seq(response), function(a){
+#   plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
+#          tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
+# })
+
+
 ######plotting "Levelplot of R2 of Species by landuse"###
 species <- tests_agg_sum[, 1]
 species <- unique(species)

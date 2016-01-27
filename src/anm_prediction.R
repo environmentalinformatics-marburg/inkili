@@ -113,58 +113,10 @@ info <- append(info,
 info <- append(info, 
                paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv)) ######außerdem noch datum des modelllaufs einfügen
 
-save(models, tests, info, file = "gpm_models_rf_2016_01_06.rda")
-#load("gpm_models_rf_2015_12_22.rda") ###which model does what: data_div/gpm_models_readme.txt
+save(models, info, file = "gpm_models_rf_2016_01_06.rda")
 ####################################################################################
 
-###testing###
 
-var_imp <- compVarImp(models)
-
-var_imp_plot <- plotVarImp(var_imp)
-
-var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
-
-tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE, 
-                       sub_selectors = c(1,3), details = TRUE)
-
-#tests_pairs <- aggregate(tests, by = list(tests$pairs), FUN = function(x){x[1]})
-tests_agg <- aggregate(tests, by=list(tests$model_response, tests$model_selector), FUN="mean")
-
-# #create a list where all landuse types are rearranged in less groups
-# agg_lnduse <- as.data.frame(unique(tests$model_selector))
-# colnames(agg_lnduse) <- c("plot_lnduse")
-# agg_lnduse$plot_lnduse <- as.character(agg_lnduse$plot_lnduse)
-# agg_lnduse$lnduse_sum <- agg_lnduse$plot_lnduse
-# agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "flm" | 
-#                         agg_lnduse$plot_lnduse == "foc" ] <- "forest"
-# agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "fod" ] <- "forest_disturbed"
-
-
-tests$model_selector <- as.character(tests$model_selector)
-tests$model_select_sum <- tests$model_selector
-tests$model_select_sum[tests$model_select_sum == "flm" | 
-                         tests$model_select_sum == "foc"] <- "forest"
-tests$model_select_sum[tests$model_select_sum == "fod"] <- "forest_disturbed"
-
-tests_agg_sum <- aggregate(tests, by=list(tests$model_response, tests$model_select_sum), FUN="mean")
-
-tests_heat <- tests_agg_sum
-
-#tests sorted after highest R2
-tests_srt <- tests_agg[with(tests_agg, order(tests_agg$r_squared, decreasing = T)), ]
-tests_srt_sum <- tests_agg_sum[with(tests_agg_sum, order(tests_agg_sum$r_squared, decreasing = T)), ]
-
-#write.csv(tests_srt, file= "tests_srt_REPLACEWITHDATE.csv", row.names=F, sep = ",")
-#write.csv(tests_srt_sum, file= "tests_srt_sum_15_12_22.csv", row.names=F, sep = ",")
-
-plot_all <- lapply(seq(response), function(a){
-  plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
-         tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
-})
-
-tests_min_agg_land <- tests_agg_sum
-aggregate(tests, by=list(tests$model_response, tests$model_selector), FUN="mean")
   
 ######################################################################################
 ###different stuff from testing phase###
@@ -206,24 +158,3 @@ pair_r2_reg_clp <- lm(tests_clp$r_squared ~ tests_clp$pairs)
 plot(tests_clp$r_squared ~ tests_clp$pairs)
 abline(pair_r2_reg_clp)
 summary(pair_r2_reg_clp)
-
-
-#
-# tests <- compContTests(models)
-# 
-# tstat_mean <- lapply(tests, function(x){
-#   data.frame(RESPONSE = x$RESPONSE[1], 
-#              KAPPA_MEAN = mean(x$Kappa, na.rm = TRUE),
-#              POD_MEAN = mean(x$POD, na.rm = TRUE),
-#              FAR_MEAN = mean(x$FAR, na.rm = TRUE), 
-#              POFD_MEAN = mean(x$POFD, na.rm = TRUE),
-#              ACCURACY_MEAN = mean(x$ACCURACY, na.rm = TRUE),
-#              SR_MEAN = mean(x$SR, na.rm = TRUE),
-#              TS_MEAN = mean(x$TS, na.rm = TRUE),
-#              ETS_MEAN = mean(x$ETS, na.rm = TRUE),
-#              HK_MEAN = mean(x$HK, na.rm = TRUE))
-# })
-# tstat_mean <- do.call("rbind", tstat_mean)
-# tstat_mean <- merge(tstat_mean, common_response, by = "RESPONSE")
-# tstat_mean[order(tstat_mean$KAPPA_MEAN, decreasing = TRUE),]
-# corrplot(cor(tstat_mean[, -1]))
