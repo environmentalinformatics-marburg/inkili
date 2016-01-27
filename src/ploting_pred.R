@@ -34,5 +34,5 @@ levelplot(rst_rsq, scales = list(x = list(at = 1:11, labels = as.character(speci
           
           margin = FALSE, 
           col.regions = clr(101), 
-          at = seq(0, 0.35, 0.005))
+          at = seq(0, 0.60, 0.01))
 ####################################################################################

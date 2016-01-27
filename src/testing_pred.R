@@ -1,6 +1,6 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-load("gpm_models_rf_2015_12_22.rda")
+#load("gpm_models_rf_2016_01_27.rda")
 
 ###testing###
 
@@ -42,7 +42,7 @@ tests_srt <- tests_agg[with(tests_agg, order(tests_agg$r_squared, decreasing = T
 tests_srt_sum <- tests_agg_sum[with(tests_agg_sum, order(tests_agg_sum$r_squared, decreasing = T)), ]
 
 tests_srt_land <- tests_agg_land[with(tests_agg_land, order(tests_agg_land$r_squared, decreasing = T)), ]
-tests_srt_spec <- tests_agg_land[with(tests_agg_land, order(tests_agg_land$r_squared, decreasing = T)), ]
+tests_srt_spec <- tests_agg_spec[with(tests_agg_spec, order(tests_agg_spec$r_squared, decreasing = T)), ]
 
 ####prepare and clean for write out############################################
 #tests_srt
@@ -52,7 +52,7 @@ tests_srt <- tests_srt[,c(((which(colnames(tests_srt) == "spec")):
                          ((which(colnames(tests_srt) == "testing_response")):
                            (which(colnames(tests_srt) == "residuals"))))]
 #tests_srt_sum
-colnames(tests_srt_sum)[1:2] <- c("spec", "land")
+colnames(tests_srt_sum)[1:2] <- c("spec", "land_sum")
 tests_srt_sum <- tests_srt_sum[,c(((which(colnames(tests_srt_sum) == "spec")):
                              (which(colnames(tests_srt_sum) == "land"))),
                           ((which(colnames(tests_srt_sum) == "testing_response")):
@@ -63,15 +63,15 @@ tests_srt_land <- tests_srt_land[,c((which(colnames(tests_srt_land) == "land_sum
                                    ((which(colnames(tests_srt_land) == "testing_response")):
                                       (which(colnames(tests_srt_land) == "residuals"))))]
 #tests_srt_spec
-colnames(tests_srt_land)[1] <- c("land_sum")
-tests_srt_land <- tests_srt_land[,c((which(colnames(tests_srt_land) == "land_sum")),
-                                    ((which(colnames(tests_srt_land) == "testing_response")):
-                                       (which(colnames(tests_srt_land) == "residuals"))))]
+colnames(tests_srt_spec)[1] <- c("spec")
+tests_srt_spec <- tests_srt_spec[,c((which(colnames(tests_srt_spec) == "spec")),
+                                    ((which(colnames(tests_srt_spec) == "testing_response")):
+                                       (which(colnames(tests_srt_spec) == "residuals"))))]
 
-#write.csv(tests_srt, file = "tests_srt_15_12_22.csv", row.names = F, sep = ",")
-#write.csv(tests_srt_sum, file = "tests_srt_sum_15_12_22.csv", row.names = F, sep = ",")
-#write.csv(tests_srt_land, file = "tests_srt_land_15_12_22.csv", row.names = F, sep = ",")
-#write.csv(tests_srt_spec, file = "tests_srt_spec_15_12_22.csv", row.names = F, sep = ",")
+# write.csv(tests_srt, file = "tests_srt_16_01_27.csv", row.names = F)
+# write.csv(tests_srt_sum, file = "tests_srt_sum_16_01_27.csv", row.names = F)
+# write.csv(tests_srt_land, file = "tests_srt_land_16_01_27.csv", row.names = F)
+# write.csv(tests_srt_spec, file = "tests_srt_spec_16_01_27.csv", row.names = F)
 ###############################################################################
 ###different stuff from testing phase###
 ###############################################################################

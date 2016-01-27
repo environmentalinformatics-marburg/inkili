@@ -59,9 +59,9 @@ tec_crdnt <- tec_crdnt_mrg[order(tec_crdnt_mrg$plot_rnd),]
 
 write.table(tec_crdnt, file = paste0(outpath, "/", "tec_crdnt.csv"),
             row.names=F, sep = ",")
-
+#tec_crdnt <- read.csv(paste0(inpath, "/", "tec_crdnt.csv"), header=T, sep=",")
 ldr_stats_all <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
-                       crdnt_y = tec_crdnt$y_pnt, radius = 20)
+                       crdnt_y = tec_crdnt$y_pnt, radius = 50)
 
 ldr_stats <- rdc_by_ldr(dataframe_plts = ldr_stats_all, dataframe_crdnt = tec_crdnt)
 

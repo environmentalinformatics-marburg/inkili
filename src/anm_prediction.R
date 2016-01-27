@@ -101,7 +101,7 @@ independent <- grnd_ldr@meta$input$INDEPENDENT
 models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
-                     response_nbr = c(7), resample_nbr = c(55), ###bei min_occ_thv = 20 stand hier: (1:11); (1:100)
+                     response_nbr = c(1:11), resample_nbr = c(1:100), ###bei min_occ_thv = 20 stand hier: (1:11); (1:100)
                      mthd = "rf", cv_nbr = 10)
 
 # compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
@@ -113,7 +113,7 @@ info <- append(info,
 info <- append(info, 
                paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv)) ######außerdem noch datum des modelllaufs einfügen
 
-save(models, info, file = "gpm_models_rf_2016_01_06.rda")
+save(models, info, file = "gpm_models_rf_2016_01_27.rda")
 ####################################################################################
 
 
