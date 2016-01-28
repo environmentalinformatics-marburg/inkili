@@ -33,6 +33,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius){
     #                    ",radius=", r, ")")
     # df <- pointdb$query_radius_rect(x=pos[1], y=pos[2], radius=100, columns="x,y,z", normalise=normalise)
     #all_points <- eval(parse(text = call))
+    all_points <- all_points[all_points$z,]
     return(all_points)
   }
 
