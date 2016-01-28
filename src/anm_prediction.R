@@ -7,9 +7,11 @@ setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht au
 #library(gpm)
 library(grid)
 
+mod_date <- "16_01_28"
+
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
 ###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
-grnd_ldr <- read.table("grnd_ldr.csv", 
+grnd_ldr <- read.table("grnd_ldr.csv",
                          header = TRUE, sep = ",", dec = ".")
 
 
@@ -20,20 +22,20 @@ grnd_ldr <- grnd_ldr[which(grnd_ldr$max_angl <= 25),]
 #grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
 
 # meta_data <- createGPMMeta(grnd_ldr, type = "input",
-#                            selector = 1, response = c(30:63, 67:403), 
+#                            selector = 1, response = c(30:63, 67:403),
 #                            independent = c(4:6, 8:18), meta = c(2,3,7,20:30, 64:66))
 meta_data <- createGPMMeta(grnd_ldr, type = "input",
-                           selector = 1, 
+                           selector = 1,
                            #response and independent from "colname" to "colname"
                            #- better handling, when new columns are made
                            response = c((which(colnames(grnd_ldr) == "total_insct")):
                                           (which(colnames(grnd_ldr) == "ttl_insct_rdc")),
                                         (which(colnames(grnd_ldr) == "Agri0001")):
-                                          (which(colnames(grnd_ldr) == "rich_beet"))), 
+                                          (which(colnames(grnd_ldr) == "rich_beet"))),
                            independent = c((which(colnames(grnd_ldr) == "max_hght")):
-                                             (which(colnames(grnd_ldr) == "mdn")), 
+                                             (which(colnames(grnd_ldr) == "mdn")),
                                            (which(colnames(grnd_ldr) == "max_rtrn")):
-                                             (which(colnames(grnd_ldr) == "sd_per_rtrn_2"))), 
+                                             (which(colnames(grnd_ldr) == "sd_per_rtrn_2"))),
                            meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
                                     (which(colnames(grnd_ldr) == "crdnt_y")),
                                     (which(colnames(grnd_ldr) == "max_angl")),
@@ -55,7 +57,7 @@ min_occ <- 0
 min_rsmpl <- 100
 min_thv <- 20 ##################################################standardwert hier war 20
 min_occurence <- minimumOccurence(x = observations, selector = plotid,
-                                  occurence = min_occ, 
+                                  occurence = min_occ,
                                   resample = min_rsmpl, thv = min_thv)
 common_response_variables <- min_occurence[[1]]
 common_response <- data.frame(min_occurence[[2]])
@@ -67,8 +69,8 @@ rownames(common_response) <- NULL
 
 
 # Compile model evaluation dataset ---------------------------------------------
-grnd_ldr_resamples <- resamplingsByVariable(x = grnd_ldr@data$input, 
-                                              selector = plotid, 
+grnd_ldr_resamples <- resamplingsByVariable(x = grnd_ldr@data$input,
+                                              selector = plotid,
                                               resample = 100)
 # save(grnd_ldr_resamples, file = "gpm_grnd_ldr_resamples.rda")
 
@@ -80,7 +82,7 @@ grnd_ldr_resamples <- resamplingsByVariable(x = grnd_ldr@data$input,
 # load("processed/common_response_variables.rda")
 # load("processed/grnd_ldr_resamples.rda")
 col_response <- common_response_variables
-grnd_ldr_trte <- splitMultResp(x = grnd_ldr@data$input, 
+grnd_ldr_trte <- splitMultResp(x = grnd_ldr@data$input,
                                  response = col_response,
                                  resamples = grnd_ldr_resamples)
 # save(grnd_ldr_trte, file = "gpm_grnd_ldr_trte.rda")
@@ -104,30 +106,30 @@ models <- trainModel(x = grnd_ldr,
                      response_nbr = c(1:11), resample_nbr = c(1:100), ###bei min_occ_thv = 20 stand hier: (1:11); (1:100)
                      mthd = "rf", cv_nbr = 10)
 
-# compRegrTests(models, per_model = TRUE, per_selector = FALSE, 
+# compRegrTests(models, per_model = TRUE, per_selector = FALSE,
 #               sub_selectors = c(1,3), details = FALSE)
 info <- append(paste0 ("response_", response),  ##########################################wie geht das schlauer?
                paste0("independent_", independent))
-info <- append(info, 
+info <- append(info,
                paste0("radius_ldr_", grnd_ldr@data$input$ldr_radius[1]))
-info <- append(info, 
+info <- append(info,
                paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv)) ######außerdem noch datum des modelllaufs einfügen
 
-save(models, info, file = "gpm_models_rf_2016_01_27.rda")
+save(models, info, file = paste0("gpm_models_rf_", mod_date, ".rda")
 ####################################################################################
 
 
-  
+
 ######################################################################################
 ###different stuff from testing phase###
 ######################################################################################
 
 #plot single plots
 sngl_nm_rspns <- "Acari"
-sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~ 
+sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~
                  tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
-plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] 
-     ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], 
+plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)]
+     ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)],
      main = sngl_nm_rspns)
 abline(sngl_reg)
 

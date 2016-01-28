@@ -31,7 +31,7 @@ library(inkili)
 inpath <- ("/media/aziegler/Volume/data_div")
 outpath <- ("/media/aziegler/Volume/data_div")
 #setwd()
-mod_date <- "16_01_28"
+mod_date <-
 ###############################################################################
 
 #tec_info is created in Bodendaten_sort.R
@@ -61,7 +61,7 @@ write.table(tec_crdnt, file = paste0(outpath, "/", "tec_crdnt.csv"),
             row.names=F, sep = ",")
 #tec_crdnt <- read.csv(paste0(inpath, "/", "tec_crdnt.csv"), header=T, sep=",")
 ldr_stats_all <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
-                       crdnt_y = tec_crdnt$y_pnt, radius = 20)
+                       crdnt_y = tec_crdnt$y_pnt, radius = 50)
 
 ldr_stats <- rdc_by_ldr(dataframe_plts = ldr_stats_all, dataframe_crdnt = tec_crdnt)
 

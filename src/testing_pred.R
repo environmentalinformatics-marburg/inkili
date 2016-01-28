@@ -54,7 +54,7 @@ tests_srt <- tests_srt[,c(((which(colnames(tests_srt) == "spec")):
 #tests_srt_sum
 colnames(tests_srt_sum)[1:2] <- c("spec", "land_sum")
 tests_srt_sum <- tests_srt_sum[,c(((which(colnames(tests_srt_sum) == "spec")):
-                             (which(colnames(tests_srt_sum) == "land"))),
+                             (which(colnames(tests_srt_sum) == "land_sum"))),
                           ((which(colnames(tests_srt_sum) == "testing_response")):
                              (which(colnames(tests_srt_sum) == "residuals"))))]
 #tests_srt_land
