@@ -21,6 +21,7 @@
 #mdn = median
 #qntl= quantile
 #cnt = count
+#asl = above sea level
 
 #load libraries
 library(rgdal)
@@ -31,7 +32,7 @@ library(inkili)
 inpath <- ("/media/aziegler/Volume/data_div")
 outpath <- ("/media/aziegler/Volume/data_div")
 #setwd()
-mod_date <-
+mod_date <-  # yy_mm_dd
 ###############################################################################
 
 #tec_info is created in Bodendaten_sort.R
@@ -60,14 +61,20 @@ tec_crdnt <- tec_crdnt_mrg[order(tec_crdnt_mrg$plot_rnd),]
 write.table(tec_crdnt, file = paste0(outpath, "/", "tec_crdnt.csv"),
             row.names=F, sep = ",")
 #tec_crdnt <- read.csv(paste0(inpath, "/", "tec_crdnt.csv"), header=T, sep=",")
-ldr_stats_all <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
-                       crdnt_y = tec_crdnt$y_pnt, radius = 50)
+ldr_stats_norm <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
+                       crdnt_y = tec_crdnt$y_pnt, radius = 50, height = F)
+
+##height above se level
+ldr_hght_asl <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
+                           crdnt_y = tec_crdnt$y_pnt, radius = 1, height = T)
+
+#ldr_stats_all <- merge(ldr_stats_norm, ldr_hght_asl, by = c("plotID", "crdnt_x", "crdnt_y"))
+ldr_stats_all <- cbind(ldr_stats_norm, ldr_hght_asl[which(colnames(ldr_hght_asl) == "hght_asl")])
 
 ldr_stats <- rdc_by_ldr(dataframe_plts = ldr_stats_all, dataframe_crdnt = tec_crdnt)
-
 ###write out table
 write.table(ldr_stats, file=paste0(outpath, "/", mod_date, "ldr_stats.csv"),
-            row.names=F, sep = ",")
+           row.names=F, sep = ",")
 
 #
 # # ###############testing request for single plot##################################

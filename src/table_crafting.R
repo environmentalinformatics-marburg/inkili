@@ -5,7 +5,7 @@ library(inkili)
 
 
 inpath <- "/media/aziegler/Volume/data_div"
-mod_date <-
+mod_date <-   #yy_mm_dd
 ###reading ground truth tables
 #tec_info <- read.csv(paste0(inpath, "/", "tec_info.csv"), header=T, sep=",")
 #anm_SR <- read.csv(paste0(inpath, "/", "anm_SR.csv"), header=T, sep=",")
@@ -14,7 +14,7 @@ beet_SR_fin <- read.csv(paste0(inpath, "/", "beet_SR_fin.csv"), header=T, sep=",
 insct_SR_fin <- read.csv(paste0(inpath, "/", "insct_SR_fin.csv"), header=T, sep=",")
 tec_crdnt <- read.csv(paste0(inpath, "/", "tec_crdnt.csv"), header=T, sep=",")
 ###reading lidar table
-ldr_stats <-read.csv(paste0(inpath, "/", "ldr_stats.csv"), header=T, sep=",")
+ldr_stats <-read.csv(paste0(inpath, "/", mod_date, "ldr_stats", ".csv"), header=T, sep=",")
 
 ### reducing all tables to lidar cover
 ##creating vector with lidar plots
@@ -33,5 +33,5 @@ grnd_anm <- cbind(tec_crdnt_rdc, insct_SR_rdc[,c(6:ncol(insct_SR_rdc))], beet_SR
 #grnd_ldr_check <- cbind (ldr_stats, grnd_anm)
 grnd_ldr <- cbind (ldr_stats, grnd_anm)
 
-write.csv(grnd_ldr, file = "/media/aziegler/Volume/data_div/grnd_ldr.csv", row.names = F)
+write.csv(grnd_ldr, file = paste0("/media/aziegler/Volume/data_div/", mod_date, "grnd_ldr.csv"), row.names = F)
 
