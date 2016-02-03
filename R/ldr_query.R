@@ -28,7 +28,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
 
   func_ldr <- function(utm_x, utm_y, r, normalise){
     all_points <- pointdb$query_radius_rect(x = utm_x, y = utm_y, radius = r, normalise=normalise)
-    #all_points <- all_points[all_points$z,]
+    #all_points <- all_points[all_points$z>1,] #1m ist zu hoch
     return(all_points)
   }
   if (height ==F) {
@@ -48,14 +48,14 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
 
       # calculate quantiles # changed: from Stephan
       data <- ldr_pnts_all$z
-      qmin <- quantile(data, 0.01)
-      qmax <- quantile(data, 0.99)
-      data <- data[qmin<=data]
-      data <- data[data<=qmax]
+      ###qmin <- quantile(data, 0.01)
+      ###qmax <- quantile(data, 0.99)
+      ###data <- data[qmin<=data]
+      ###data <- data[data<=qmax]
       # convert from values a.s.l. to "treeheight"
       #Problem: height above lowest point of lidarpoints
       #at slope Plots this might be a problem
-      data <- data - qmin
+      ###data <- data - qmin
       ldr_qntl <- quantile(data, probs=seq(0,1,0.25))
       ldr_qntl_0 <- ldr_qntl[[1]]
       ldr_qntl_25 <- ldr_qntl[[2]]
@@ -71,7 +71,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
         cffnt_x <- NA
         cffnt_x2 <- NA
         cffnt_x3 <- NA
-        cffnt_x4 <- NA
+        #cffnt_x4 <- NA
         ldr_max_rtrn <- NA
         lst_sd_rtrn <- NA
         sd_per_rtrn_1 <- NA
@@ -93,7 +93,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
         cffnt_x <- smmry_dnst$coefficients[2,1]
         cffnt_x2 <- smmry_dnst$coefficients[3,1]
         cffnt_x3 <- smmry_dnst$coefficients[4,1]
-        cffnt_x4 <- smmry_dnst$coefficients[5,1]
+        #cffnt_x4 <- smmry_dnst$coefficients[5,1] #rausgenommen für 16_02_02
 
         ###calculate sd of each "return set" (one return set consists of only first
         ###or seconde or... returns)
@@ -130,7 +130,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
                   qntl_50 = ldr_qntl_50, qntl_75 = ldr_qntl_75,
                   qntl_100 = ldr_qntl_100, cffnt_intcpt = cffnt_intcpt,
                   cffnt_x = cffnt_x, cffnt_x2 = cffnt_x2, cffnt_x3 = cffnt_x3,
-                  cffnt_x4 = cffnt_x4,
+                  #cffnt_x4 = cffnt_x4,
                   sd_per_rtrn_1 = sd_per_rtrn_1, sd_per_rtrn_2 = sd_per_rtrn_2,
                   ldr_radius = radius))
     })

@@ -4,10 +4,10 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
 # Libraries --------------------------------------------------------------------
-#library(gpm)
+library(gpm)
 library(grid)
 
-mod_date <- ""
+mod_date <- "16_02_02_b"
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
 ###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
@@ -35,9 +35,8 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                            independent = c((which(colnames(grnd_ldr) == "max_hght")):
                                              (which(colnames(grnd_ldr) == "mdn")),
                                            (which(colnames(grnd_ldr) == "max_rtrn")):
-                                             (which(colnames(grnd_ldr) == "sd_per_rtrn_2"))
-                                           #,(which(colnames(grnd_ldr) == "hght_asl"))
-                                           ),
+                                             (which(colnames(grnd_ldr) == "sd_per_rtrn_2")),
+                                           (which(colnames(grnd_ldr) == "hght_asl"))),
                            meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
                                     (which(colnames(grnd_ldr) == "crdnt_y")),
                                     (which(colnames(grnd_ldr) == "max_angl")),
@@ -101,7 +100,7 @@ response <- common_response_variables
 independent <- grnd_ldr@meta$input$INDEPENDENT
 
 ######model calculation####################################################
-#load("gpm_models_rf_2015_12_22.rda") ###which model does what: data_div/gpm_models_readme.txt
+#load("gpm_models_rf_2016_01_27.rda") ###which model does what: data_div/gpm_models_readme.txt
 models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
