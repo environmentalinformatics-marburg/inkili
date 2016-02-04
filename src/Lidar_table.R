@@ -32,7 +32,7 @@ library(inkili)
 inpath <- ("/media/aziegler/Volume/data_div")
 outpath <- ("/media/aziegler/Volume/data_div")
 #setwd()
-mod_date <-  # yy_mm_dd
+mod_date <-   # yy_mm_dd
 ###############################################################################
 
 #tec_info is created in Bodendaten_sort.R

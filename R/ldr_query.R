@@ -33,7 +33,11 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
   }
   if (height ==F) {
     ldr_sapply <- sapply(seq(length(crdnt_x)), function(i) {
-      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = "") #"origin,ground,extremes"
+      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = "ground") #"origin,ground,extremes"
+      qmin <- quantile(ldr_pnts_all$z, 0.005)
+      qmax <- quantile(ldr_pnts_all$z, 0.995)
+      ldr_pnts_all$z <- ldr_pnts_all$z[qmin<=ldr_pnts_all$z]
+      ldr_pnts_all <- ldr_pnts_all[ldr_pnts_all$z<=qmax]
       ##check if order is right when cbinding
       #plts_name <- as.character(plotID[i])
       #calculate maximal height

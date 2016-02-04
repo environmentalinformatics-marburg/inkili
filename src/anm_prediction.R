@@ -7,7 +7,7 @@ setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht au
 library(gpm)
 library(grid)
 
-mod_date <- "16_02_02_b"
+mod_date <-"16_02_03_c"
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
 ###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
@@ -100,7 +100,7 @@ response <- common_response_variables
 independent <- grnd_ldr@meta$input$INDEPENDENT
 
 ######model calculation####################################################
-#load("gpm_models_rf_2016_01_27.rda") ###which model does what: data_div/gpm_models_readme.txt
+#load("gpm_models_rf_16_02_02_a.rda") ###which model does what: data_div/gpm_models_readme.txt
 models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
