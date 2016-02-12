@@ -84,7 +84,7 @@ beet_info$trap <- substr(beet_info$orig_name, 18, 20)
 beet_srt <- cbind(beet_info[2:4], beet_trans[ncol(beet_trans)], beet_trans[1:(ncol(beet_trans)-1)])
 rownames(beet_srt) <- NULL
 
-### aggregate beet_srt by plot and date(=round)
+### aggregate beet_srt by plot and date (=round)
 beet_SR_srt <- as.data.frame(aggregate(beet_srt[5], by = list(beet_srt$plotID, beet_srt$date_coll), FUN="mean"))
 for (i in (6:ncol(beet_srt))){
   tmp_mean <- aggregate(beet_srt[i], by = list(beet_srt$plotID, beet_srt$date_coll), FUN="mean")
@@ -128,7 +128,7 @@ colnames(insct_SR_fin)[ncol(insct_SR_fin)-1] <- c("rich_insct")
 colnames(insct_SR_fin)[ncol(insct_SR_fin)] <- c("ttl_insct_rdc")
 
 ###analog to the prior:
-###create one table without the insect species
+###create one table for beetles without the insect species
 beet_SR_fin <- all_SR[, c(1:5, 39:41, 44:ncol(all_SR))]
 colnames(beet_SR_fin)[c(1:5)] <- c("plot_rnd", "plotID", "date_coll",
                                          "rnd", "elevation")

@@ -10,7 +10,7 @@ var_imp_plot <- plotVarImp(var_imp)
 
 var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
 
-tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE, 
+tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE,
                        sub_selectors = c(1,3), details = TRUE)
 
 #tests_pairs <- aggregate(tests, by = list(tests$pairs), FUN = function(x){x[1]})
@@ -21,14 +21,14 @@ tests_agg <- aggregate(tests, by=list(tests$model_response, tests$model_selector
 # colnames(agg_lnduse) <- c("plot_lnduse")
 # agg_lnduse$plot_lnduse <- as.character(agg_lnduse$plot_lnduse)
 # agg_lnduse$lnduse_sum <- agg_lnduse$plot_lnduse
-# agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "flm" | 
+# agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "flm" |
 #                         agg_lnduse$plot_lnduse == "foc" ] <- "forest"
 # agg_lnduse$lnduse_sum[agg_lnduse$plot_lnduse == "fod" ] <- "forest_disturbed"
 
 
 tests$model_selector <- as.character(tests$model_selector)
 tests$model_select_sum <- tests$model_selector
-tests$model_select_sum[tests$model_select_sum == "flm" | 
+tests$model_select_sum[tests$model_select_sum == "flm" |
                          tests$model_select_sum == "foc"] <- "forest"
 tests$model_select_sum[tests$model_select_sum == "fod"] <- "forest_disturbed"
 
@@ -68,10 +68,10 @@ tests_srt_spec <- tests_srt_spec[,c((which(colnames(tests_srt_spec) == "spec")),
                                     ((which(colnames(tests_srt_spec) == "testing_response")):
                                        (which(colnames(tests_srt_spec) == "residuals"))))]
 
-# write.csv(tests_srt, file = "tests_srt_16_01_27.csv", row.names = F)
-# write.csv(tests_srt_sum, file = "tests_srt_sum_16_01_27.csv", row.names = F)
-# write.csv(tests_srt_land, file = "tests_srt_land_16_01_27.csv", row.names = F)
-# write.csv(tests_srt_spec, file = "tests_srt_spec_16_01_27.csv", row.names = F)
+# write.csv(tests_srt, file = "tests_srt_16_02_10.csv", row.names = F)
+# write.csv(tests_srt_sum, file = "tests_srt_sum_16_02_10.csv", row.names = F)
+# write.csv(tests_srt_land, file = "tests_srt_land_16_02_10.csv", row.names = F)
+# write.csv(tests_srt_spec, file = "tests_srt_spec_16_02_10.csv", row.names = F)
 ###############################################################################
 ###different stuff from testing phase###
 ###############################################################################
@@ -79,10 +79,10 @@ tests_srt_spec <- tests_srt_spec[,c((which(colnames(tests_srt_spec) == "spec")),
 
 #plot single plots
 sngl_nm_rspns <- "Acari"
-sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~ 
+sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~
                  tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
-plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] 
-     ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], 
+plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)]
+     ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)],
      main = sngl_nm_rspns)
 abline(sngl_reg)
 

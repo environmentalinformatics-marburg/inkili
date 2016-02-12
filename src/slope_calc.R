@@ -1,6 +1,7 @@
 
 
 library(raster)
+library(rgdal)
 inpath <- "/media/aziegler/Volume/data_div/"
 
 

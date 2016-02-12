@@ -7,13 +7,12 @@ setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht au
 library(gpm)
 library(grid)
 
-mod_date <-"16_02_03_c"
+mod_date <- "16_02_10"
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
 ###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
 grnd_ldr <- read.table(paste0(mod_date, "grnd_ldr.csv"),
                          header = TRUE, sep = ",", dec = ".")
-
 
 ###filtering plots by scan angle
 grnd_ldr <- grnd_ldr[which(grnd_ldr$max_angl <= 25),]
@@ -36,7 +35,11 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                                              (which(colnames(grnd_ldr) == "mdn")),
                                            (which(colnames(grnd_ldr) == "max_rtrn")):
                                              (which(colnames(grnd_ldr) == "sd_per_rtrn_2")),
-                                           (which(colnames(grnd_ldr) == "hght_asl"))),
+                                           (which(colnames(grnd_ldr) == "hght_asl"))
+#                                            ,
+#                                            (which(colnames(grnd_ldr) == "slp")):
+#                                              (which(colnames(grnd_ldr) == "asp"))
+                                           ),
                            meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
                                     (which(colnames(grnd_ldr) == "crdnt_y")),
                                     (which(colnames(grnd_ldr) == "max_angl")),
@@ -99,8 +102,12 @@ grnd_ldr_trte <- splitMultResp(x = grnd_ldr@data$input,
 response <- common_response_variables
 independent <- grnd_ldr@meta$input$INDEPENDENT
 
+##dataframe with all meta and independent variable and only those response variables, left over by min_occ
+# grnd_ldr_df_occ <- grnd_ldr_df[,c(1:36, which(colnames(grnd_ldr_df) %in% response))]
+# write.csv(grnd_ldr_df_occ, file = paste0("/media/aziegler/Volume/data_div/", "grnd_ldr_df_occ.csv"), row.names = F)
+
 ######model calculation####################################################
-#load("gpm_models_rf_16_02_02_a.rda") ###which model does what: data_div/gpm_models_readme.txt
+#load("gpm_models_rf_16_02_10.rda") ###which model does what: data_div/gpm_models_readme.txt
 models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),

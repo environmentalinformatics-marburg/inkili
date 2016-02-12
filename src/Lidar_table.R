@@ -28,6 +28,8 @@ library(rgdal)
 library(rPointDB)
 library(rgl)
 library(inkili)
+library(raster)
+
 #inpath <- ("E:/")
 inpath <- ("/media/aziegler/Volume/data_div")
 outpath <- ("/media/aziegler/Volume/data_div")
@@ -44,16 +46,34 @@ plot_shp <- readOGR(dsn=paste0(inpath, "/PlotPoles_WGS1984_mod_20140807_final",
                     layer="PlotPoles_WGS1984_mod_20140807_final_lidar_2")
 plot_df <- as.data.frame(plot_shp)
 
+DGM <- raster(paste0(inpath, "/DEM_UTM37S_WGS84_30m_Hemp.tif"))
+slp <- raster(paste0(inpath, "/DEM_UTM37S_WGS84_30m_Hemp_slp_qgis.tif"))
+asp <- raster(paste0(inpath, "/DEM_UTM37S_WGS84_30m_Hemp_asp_qgis.tif"))
+
 #get middle Plotpoles
 #plot_mid <- plot_df[which(plot_df$PoleType %in% "AMP"),] # alle middle poles! alle eindeutig
 plot_mid <- plot_shp[which(plot_df$PoleType %in% "AMP"),]
+plot_mid_df <- as.data.frame(plot_mid)
+
+####slope&aspect are not calculated from lidar, but from DGM ###should be changed in the future
+slp_buff <- extract(slp, plot_mid, buffer = 50)
+slp_pnts <- lapply(seq(slp_buff), function(x) mean(slp_buff[[x]]))
+slp_df <- as.data.frame(t(as.data.frame(slp_pnts)))
+
+
+asp_buff <- extract(asp, plot_mid, buffer = 50)
+asp_pnts <- lapply(seq(asp_buff), function(x) mean(asp_buff[[x]]))
+asp_df <- as.data.frame(t(as.data.frame(asp_pnts)))
+
+
+plot_mid_slp_asp <- cbind(plot_mid_df, slp_df, asp_df)
 
 #merge: get middle plot pole coordinate for each entry in tec_info
-tec_crdnt_mrg <- merge(tec_info, plot_mid, by.x="plotID", by.y="PlotID")
+tec_crdnt_mrg <- merge(tec_info, plot_mid_slp_asp, by.x="plotID", by.y="PlotID")
 #cleanup
 colnames(tec_crdnt_mrg) <- (c("plotID", "plot_rnd", "date_coll_insct", "rnd",
                           "elev_insct", "polename", "poletype", "x_msr","y_msr",
-                          "z_gps","z_dem_hmp","x_pnt","y_pnt"))
+                          "z_gps","z_dem_hmp","x_pnt","y_pnt", "slp", "asp"))
 tec_crdnt_mrg <- tec_crdnt_mrg[ , -which(names(tec_crdnt_mrg) %in% c("x_msr", "y_msr"))]
 tec_crdnt <- tec_crdnt_mrg[order(tec_crdnt_mrg$plot_rnd),]
 
@@ -67,6 +87,8 @@ ldr_stats_norm <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt
 ##height above se level
 ldr_hght_asl <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
                            crdnt_y = tec_crdnt$y_pnt, radius = 1, height = T)
+
+
 
 #ldr_stats_all <- merge(ldr_stats_norm, ldr_hght_asl, by = c("plotID", "crdnt_x", "crdnt_y"))
 ldr_stats_all <- cbind(ldr_stats_norm, ldr_hght_asl[which(colnames(ldr_hght_asl) == "hght_asl")])
