@@ -74,6 +74,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
         cffnt_x3 <- NA
         cffnt_x4 <- NA #rausgenommen für 16_02_02
         ldr_max_rtrn <- NA
+        #ldr_min_rtrn <- NA
         lst_sd_rtrn <- NA
         sd_per_rtrn_1 <- NA
         sd_per_rtrn_2 <- NA
@@ -100,6 +101,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
         ###or seconde or... returns)
         # calculate maximum number of returns
         ldr_max_rtrn <- max(ldr_pnts_all$returns)
+        #ldr_min_rtrn <- min(ldr_pnts_all$returns)
         # calculate for each return set
         #calculate standard deviation of all first, second, ... returns in one plot
         lst_sd_rtrn <- lapply((c(1:ldr_max_rtrn)), function(x) {
@@ -126,6 +128,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
       }
       return(list(max_hght = ldr_max_hght, sd = ldr_sd_hght, mdn = ldr_mdn_rtrn,
                   max_angl = ldr_max_angl, max_rtrn = ldr_max_rtrn,
+                  #min_rtrn = ldr_min_rtrn,
                   sd_lst_rtrn = ldr_sd_last_rtrn, sd_max_rtrn = ldr_sd_nmbr_rtrn,
                   qntl_0 = ldr_qntl_0, qntl_25 = ldr_qntl_25,
                   qntl_50 = ldr_qntl_50, qntl_75 = ldr_qntl_75,

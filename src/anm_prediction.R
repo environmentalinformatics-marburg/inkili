@@ -2,7 +2,7 @@
 #sum = summarized
 
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
-
+#setwd("run/user/1000/gvfs/sftp:host=137.248.191.247,user=aziegler/media/aziegler/Volume/data_div/") #einzeln hinnavigieren unter ssh
 # Libraries --------------------------------------------------------------------
 library(gpm)
 library(grid)

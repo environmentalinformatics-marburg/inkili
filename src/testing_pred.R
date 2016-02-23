@@ -1,7 +1,10 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-#load("gpm_models_rf_2016_01_27.rda")
+mod_date <- "16_02_03_b"
+load(paste0("gpm_models_rf_", mod_date, ".rda"))
 
+library(gpm)
+library(xlsx)
 ###testing###
 
 var_imp <- compVarImp(models)
@@ -10,6 +13,31 @@ var_imp_plot <- plotVarImp(var_imp)
 
 var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
 
+###resort variable importance values for further calculation
+imp_resp <-lapply(seq(var_imp[[1]]$mean), function(i){ 
+  imp_j <- lapply((var_imp), function(j){
+    sngl_entry <- j$mean[[i]]
+  })
+  imp_j <- do.call("cbind", imp_j)
+})
+imp_resp <- do.call("rbind", imp_resp)
+imp_resp <- cbind(imp_resp, rowMeans(imp_resp))
+###label variale importance df
+#colnames
+col_nm <- lapply(seq(var_imp), function (spec){
+  levels(var_imp[[spec]]$RESPONSE)
+})
+col_nm <- do.call("rbind", col_nm)
+colnames(imp_resp) <- c(col_nm, "var_imp_mean")
+#rownames
+row_nm <- levels(var_imp[[1]]$VARIABLE)
+rownames(imp_resp) <- row_nm
+imp_resp_df <- as.data.frame(imp_resp)
+
+var_imp_srt <- imp_resp_df[with(imp_resp_df, order(imp_resp_df$var_imp_mean, decreasing = T)), ]
+
+  
+#####R2 tests for the models
 tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE,
                        sub_selectors = c(1,3), details = TRUE)
 
@@ -57,6 +85,9 @@ tests_srt_sum <- tests_srt_sum[,c(((which(colnames(tests_srt_sum) == "spec")):
                              (which(colnames(tests_srt_sum) == "land_sum"))),
                           ((which(colnames(tests_srt_sum) == "testing_response")):
                              (which(colnames(tests_srt_sum) == "residuals"))))]
+all_r2 <- mean(tests_srt_sum$r_squared)
+max_r2 <- max(tests_srt_sum$r_squared)
+min_r2 <- min(tests_srt_sum$r_squared)
 #tests_srt_land
 colnames(tests_srt_land)[1] <- c("land_sum")
 tests_srt_land <- tests_srt_land[,c((which(colnames(tests_srt_land) == "land_sum")),
@@ -75,7 +106,33 @@ tests_srt_spec <- tests_srt_spec[,c((which(colnames(tests_srt_spec) == "spec")),
 ###############################################################################
 ###different stuff from testing phase###
 ###############################################################################
+###write out as excel workbook
+###von: https://statmethods.wordpress.com/2014/06/19/quickly-export-multiple-r-objects-to-an-excel-workbook/
+# #Funktion
+save.xlsx <- function (file, ...)
+{
+  require(xlsx, quietly = TRUE)
+  objects <- list(...)
+  fargs <- as.list(match.call(expand.dots = TRUE))
+  objnames <- as.character(fargs)[-c(1, 2)]
+  nobjects <- length(objects)
+  for (i in 1:nobjects) {
+    if (i == 1)
+      write.xlsx(objects[[i]], file, sheetName = objnames[i])
+    else write.xlsx(objects[[i]], file, sheetName = objnames[i],
+                    append = TRUE)
+  }
+  print(paste("Workbook", file, "has", nobjects, "worksheets."))
+}
+# ##Aufruf
+save.xlsx(paste0("stats_modell_", mod_date ,".xlsx"), tests_srt_sum, tests_srt_land, 
+          tests_srt_spec, all_r2, max_r2, min_r2, var_imp_srt)
 
+
+
+
+
+#########################################################################################################
 
 #plot single plots
 sngl_nm_rspns <- "Acari"
