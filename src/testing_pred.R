@@ -1,6 +1,6 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-mod_date <- "16_02_25_b"
+mod_date <- "16_02_25_c"
 load(paste0("gpm_models_rf_", mod_date, ".rda"))
 
 library(gpm)
