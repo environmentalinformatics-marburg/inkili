@@ -1,6 +1,6 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-mod_date <- "16_02_03_b"
+mod_date <- "16_02_25_b"
 load(paste0("gpm_models_rf_", mod_date, ".rda"))
 
 library(gpm)
@@ -14,7 +14,7 @@ var_imp_plot <- plotVarImp(var_imp)
 var_imp_heat <- plotVarImpHeatmap(var_imp, xlab = "Species", ylab = "Band")
 
 ###resort variable importance values for further calculation
-imp_resp <-lapply(seq(var_imp[[1]]$mean), function(i){ 
+imp_resp <-lapply(seq(var_imp[[1]]$mean), function(i){
   imp_j <- lapply((var_imp), function(j){
     sngl_entry <- j$mean[[i]]
   })
@@ -36,7 +36,7 @@ imp_resp_df <- as.data.frame(imp_resp)
 
 var_imp_srt <- imp_resp_df[with(imp_resp_df, order(imp_resp_df$var_imp_mean, decreasing = T)), ]
 
-  
+
 #####R2 tests for the models
 tests <- compRegrTests(models, per_model = TRUE, per_selector = TRUE,
                        sub_selectors = c(1,3), details = TRUE)
@@ -125,7 +125,7 @@ save.xlsx <- function (file, ...)
   print(paste("Workbook", file, "has", nobjects, "worksheets."))
 }
 # ##Aufruf
-save.xlsx(paste0("stats_modell_", mod_date ,".xlsx"), tests_srt_sum, tests_srt_land, 
+save.xlsx(paste0("stats_modell_", mod_date ,".xlsx"), tests_srt_sum, tests_srt_land,
           tests_srt_spec, all_r2, max_r2, min_r2, var_imp_srt)
 
 

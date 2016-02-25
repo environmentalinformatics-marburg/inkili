@@ -33,7 +33,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
   }
   if (height ==F) {
     ldr_sapply <- sapply(seq(length(crdnt_x)), function(i) {
-      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = "ground") #normalise = "origin,ground,extremes"
+      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = "") #normalise = "origin,ground,extremes"
 
       ##check if order is right when cbinding
       #plts_name <- as.character(plotID[i])
@@ -72,7 +72,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
         cffnt_x <- NA
         cffnt_x2 <- NA
         cffnt_x3 <- NA
-        cffnt_x4 <- NA #rausgenommen für 16_02_02
+        #cffnt_x4 <- NA #rausgenommen für 16_02_02
         ldr_max_rtrn <- NA
         #ldr_min_rtrn <- NA
         lst_sd_rtrn <- NA
@@ -95,7 +95,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
         cffnt_x <- smmry_dnst$coefficients[2,1]
         cffnt_x2 <- smmry_dnst$coefficients[3,1]
         cffnt_x3 <- smmry_dnst$coefficients[4,1]
-        cffnt_x4 <- smmry_dnst$coefficients[5,1] #rausgenommen für 16_02_02
+        #cffnt_x4 <- smmry_dnst$coefficients[5,1] #rausgenommen für 16_02_02
 
         ###calculate sd of each "return set" (one return set consists of only first
         ###or seconde or... returns)
@@ -134,7 +134,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
                   qntl_50 = ldr_qntl_50, qntl_75 = ldr_qntl_75,
                   qntl_100 = ldr_qntl_100, cffnt_intcpt = cffnt_intcpt,
                   cffnt_x = cffnt_x, cffnt_x2 = cffnt_x2, cffnt_x3 = cffnt_x3,
-                  cffnt_x4 = cffnt_x4, #rausgenommen für 16_02_02
+                  #cffnt_x4 = cffnt_x4, #rausgenommen für 16_02_02
                   sd_per_rtrn_1 = sd_per_rtrn_1, sd_per_rtrn_2 = sd_per_rtrn_2,
                   ldr_radius = radius))
     })

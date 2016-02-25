@@ -33,12 +33,12 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                                           (which(colnames(grnd_ldr) == "rich_beet"))),
                            independent = c((which(colnames(grnd_ldr) == "max_hght")):
                                              (which(colnames(grnd_ldr) == "mdn")),
-                                           (which(colnames(grnd_ldr) == "max_rtrn")):
+                                          (which(colnames(grnd_ldr) == "max_rtrn")): # verändert 16_02_25_b
                                              (which(colnames(grnd_ldr) == "sd_per_rtrn_2")),
                                            (which(colnames(grnd_ldr) == "hght_asl"))
-#                                            ,
-#                                            (which(colnames(grnd_ldr) == "slp")):
-#                                              (which(colnames(grnd_ldr) == "asp"))
+                                          ,
+                                           (which(colnames(grnd_ldr) == "slp")):
+                                             (which(colnames(grnd_ldr) == "asp"))
                                            ),
                            meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
                                     (which(colnames(grnd_ldr) == "crdnt_y")),
@@ -123,7 +123,8 @@ info <- append(info,
 info <- append(info,
                paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv)) ######außerdem noch datum des modelllaufs einfügen
 
-save(models, info, file = paste0("gpm_models_rf_", mod_date, ".rda"))
+#save(models, info, file = paste0("gpm_models_rf_", mod_date, ".rda"))
+save(models, info, file = paste0("gpm_models_rf_16_02_25_c.rda"))
 ####################################################################################
 
 

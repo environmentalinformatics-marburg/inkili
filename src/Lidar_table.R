@@ -56,12 +56,12 @@ plot_mid <- plot_shp[which(plot_df$PoleType %in% "AMP"),]
 plot_mid_df <- as.data.frame(plot_mid)
 
 ####slope&aspect are not calculated from lidar, but from DGM ###should be changed in the future
-slp_buff <- extract(slp, plot_mid, buffer = 50)
+slp_buff <- extract(slp, plot_mid, buffer = 100)
 slp_pnts <- lapply(seq(slp_buff), function(x) mean(slp_buff[[x]]))
 slp_df <- as.data.frame(t(as.data.frame(slp_pnts)))
 
 
-asp_buff <- extract(asp, plot_mid, buffer = 50)
+asp_buff <- extract(asp, plot_mid, buffer = 100)
 asp_pnts <- lapply(seq(asp_buff), function(x) mean(asp_buff[[x]]))
 asp_df <- as.data.frame(t(as.data.frame(asp_pnts)))
 
@@ -82,7 +82,7 @@ write.table(tec_crdnt, file = paste0(outpath, "/", "tec_crdnt.csv"),
             row.names=F, sep = ",")
 #tec_crdnt <- read.csv(paste0(inpath, "/", "tec_crdnt.csv"), header=T, sep=",")
 ldr_stats_norm <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,
-                       crdnt_y = tec_crdnt$y_pnt, radius = 50, height = F)
+                       crdnt_y = tec_crdnt$y_pnt, radius = 25, height = F)
 
 ##height above se level
 ldr_hght_asl <- ldr_query(plotID = tec_crdnt$plotID, crdnt_x = tec_crdnt$x_pnt,

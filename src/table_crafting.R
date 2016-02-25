@@ -5,7 +5,7 @@ library(inkili)
 
 
 inpath <- "/media/aziegler/Volume/data_div"
-mod_date <-  #yy_mm_dd
+mod_date <- #yy_mm_dd
 ###reading ground truth tables
 #tec_info <- read.csv(paste0(inpath, "/", "tec_info.csv"), header=T, sep=",")
 #anm_SR <- read.csv(paste0(inpath, "/", "anm_SR.csv"), header=T, sep=",")

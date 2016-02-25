@@ -1,11 +1,17 @@
+setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
+
+mod_date <- "16_02_10"
+load(paste0("gpm_models_rf_", mod_date, ".rda"))
+
+
 library(rasterVis)
+
 
 # #pred ~ resp
 # plot_all <- lapply(seq(response), function(a){
 #   plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
 #          tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
 # })
-
 
 ######plotting "Levelplot of R2 of Species by landuse"###
 species <- tests_agg_sum[, 1]
