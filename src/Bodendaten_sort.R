@@ -40,7 +40,6 @@ beet_spl <- read.csv ("SP7_PTabund_beetles_samples.csv", header=T, sep=";")
 
 beet_eco <- read.csv ("SP7_PTabund_beetles_ecology.csv", header=T, sep=";")
 
-sys_name <- read.csv (paste0 (inpath, "/output/systematische_bezeichnungen.csv"), header=T, sep=",")
 
 ###compile data table from "abun_SR"
 #sort abun_SR and delete unnecessary columns
@@ -51,6 +50,8 @@ insct_SR_srt$date_coll <- strptime(insct_SR_srt$date_coll, format = "%Y-%m-%d")
 insct_SR_srt$date_coll <- as.Date(insct_SR_srt$date_coll)
 insct_SR_srt$plt_rnd <- paste0(insct_SR_srt$plotID, "_", insct_SR_srt$rnd)
 insct_SR_srt <- cbind(insct_SR_srt[1:3], insct_SR_srt[ncol(insct_SR_srt)], insct_SR_srt[5:ncol(insct_SR_srt)-1])
+colnames(insct_SR_srt)[which(colnames(insct_SR_srt)=="Hym_ants")] <- "Formicideae" # means ants without army ants
+colnames(insct_SR_srt)[which(colnames(insct_SR_srt)=="Hym_excl_ants")] <- "Hymenoptera" #means hymenoptera without any ants
 
 ###adjust "beet_spl" to be included in insct_SR
 #continue editing table "beet_spl"
@@ -112,17 +113,17 @@ write.csv(all_SR, file=paste0(outpath, "/", "anm_SR.csv"), row.names=F)
 insct_SR_fin <- all_SR[, 1:38]
 colnames(insct_SR_fin)[1:6] <- c("plot_rnd", "plotID", "date_coll_insct", "rnd", "elevation", "total_insct")
 
-### create new collums with species richness for insct and total number of 
+### create new collums with species richness for insct and total number of
 ###insects without ants and Collembola (Springschwänze)
 insct_SR_spec <- insct_SR_fin[,7:ncol(insct_SR_fin)]
 insct_SR_spec$rich_insct <- rowSums(insct_SR_spec>0)
 insct_SR_spec$ttl_insct_rdc <- rowSums(insct_SR_spec
-                                           [ -which(colnames(insct_SR_spec)%in% 
-                                                      c("Collembola", 
-                                                        "Hym_army_ants", 
-                                                        "Hym_ants", 
+                                           [ -which(colnames(insct_SR_spec)%in%
+                                                      c("Collembola",
+                                                        "Hym_army_ants",
+                                                        "Hym_ants",
                                                         "rich_insct"))])
-insct_SR_fin <- cbind(insct_SR_fin, insct_SR_spec$rich_insct, 
+insct_SR_fin <- cbind(insct_SR_fin, insct_SR_spec$rich_insct,
                       insct_SR_spec$ttl_insct_rdc)
 colnames(insct_SR_fin)[ncol(insct_SR_fin)-1] <- c("rich_insct")
 colnames(insct_SR_fin)[ncol(insct_SR_fin)] <- c("ttl_insct_rdc")

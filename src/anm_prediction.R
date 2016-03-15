@@ -7,7 +7,7 @@ setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht au
 library(gpm)
 library(grid)
 
-mod_date <- "16_02_10"
+mod_date <- "16_03_15"
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
 ###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
@@ -33,7 +33,10 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                                           (which(colnames(grnd_ldr) == "rich_beet"))),
                            independent = c((which(colnames(grnd_ldr) == "max_hght")):
                                              (which(colnames(grnd_ldr) == "mdn")),
-                                          (which(colnames(grnd_ldr) == "max_rtrn")): # verändert 16_02_25_b
+                                           (which(colnames(grnd_ldr) == "max_rtrn")): # verändert 16_02_25_b
+                                             (which(colnames(grnd_ldr) == "qntl_75")), #veränder 16_03_11_a
+                                           (which(colnames(grnd_ldr) == "qntl_rng")): #veränder 16_03_11_a
+                                           #(which(colnames(grnd_ldr) == "cffnt_intcpt")): #verändert 16_03_14
                                              (which(colnames(grnd_ldr) == "sd_per_rtrn_2")),
                                            (which(colnames(grnd_ldr) == "hght_asl"))
 #                                           ,
@@ -124,7 +127,7 @@ info <- append(info,
                paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv)) ######außerdem noch datum des modelllaufs einfügen
 
 #save(models, info, file = paste0("gpm_models_rf_", mod_date, ".rda"))
-save(models, info, file = paste0("gpm_models_rf_16_03_07.rda"))
+save(models, info, file = paste0("gpm_models_rf_16_03_14_b.rda"))
 ####################################################################################
 
 

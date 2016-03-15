@@ -16,7 +16,7 @@
 
 ###work on: statistical values as an option
 
-ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
+ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NULL, dens = F){
 
   ###db aufrufen (von Stephan Wöllauer)
 
@@ -26,14 +26,16 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
 
   #function to get lidar points to a provided x and y coordinate
 
-  func_ldr <- function(utm_x, utm_y, r, normalise){
-    all_points <- pointdb$query_radius_rect(x = utm_x, y = utm_y, radius = r, normalise=normalise)
+  func_ldr <- function(utm_x, utm_y, r, normalise, filter){
+    all_points <- pointdb$query_radius_rect(x = utm_x, y = utm_y, radius = r, normalise = normalise, filter = filter)
     #all_points <- all_points[all_points$z>1,] #1m ist zu hoch
     return(all_points)
   }
   if (height ==F) {
+    if(dens ==F) {
+
     ldr_sapply <- sapply(seq(length(crdnt_x)), function(i) {
-      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = "") #normalise = "origin,ground,extremes"
+      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = "", filter = NULL) #normalise = "origin,ground,extremes"
 
       ##check if order is right when cbinding
       #plts_name <- as.character(plotID[i])
@@ -63,7 +65,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
       ldr_qntl_50 <- ldr_qntl[[3]]
       ldr_qntl_75 <- ldr_qntl[[4]]
       ldr_qntl_100 <- ldr_qntl[[5]]
-
+      ldr_qntl_rng <- ldr_qntl_75 - ldr_qntl_25
 
       ##if statement: if no lidar points are available: density calculation
       ##produces error - here those cases are sortet out
@@ -84,6 +86,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
         sd_per_rtrn_6 <- NA
         ldr_sd_last_rtrn <- NA
         ldr_sd_nmbr_rtrn <- NA
+        ldr_pnt_dnst <- NA
 
       } else {
         ### get 4 coefficients to describe density function
@@ -132,7 +135,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
                   sd_lst_rtrn = ldr_sd_last_rtrn, sd_max_rtrn = ldr_sd_nmbr_rtrn,
                   qntl_0 = ldr_qntl_0, qntl_25 = ldr_qntl_25,
                   qntl_50 = ldr_qntl_50, qntl_75 = ldr_qntl_75,
-                  qntl_100 = ldr_qntl_100, cffnt_intcpt = cffnt_intcpt,
+                  qntl_100 = ldr_qntl_100, qntl_rng = ldr_qntl_rng, cffnt_intcpt = cffnt_intcpt,
                   cffnt_x = cffnt_x, cffnt_x2 = cffnt_x2, cffnt_x3 = cffnt_x3,
                   #cffnt_x4 = cffnt_x4, #rausgenommen für 16_02_02
                   sd_per_rtrn_1 = sd_per_rtrn_1, sd_per_rtrn_2 = sd_per_rtrn_2,
@@ -149,11 +152,21 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F){
       vars[, i] <- unlist(vars[, i])
     }
     ldr_var <- cbind(plotID, crdnt_x, crdnt_y, vars)
+    } else {
+      ldr_pnt_dnst <- sapply(seq(length(crdnt_x)), function(i) {
+        ldr_pnts_crdnt <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = NULL, filter = "last_return=1")
+        pnt_dnst <- length(ldr_pnts_crdnt[[1]]) / (radius * radius)
+        return(pnt_dnst = pnt_dnst)
+    })
+      vars <- as.data.frame(ldr_pnt_dnst)
+      ### unlist elements from sapply-loop
+      ldr_var <- cbind(plotID, crdnt_x, crdnt_y, vars)
+      colnames(ldr_var)[which(colnames(ldr_var) == "ldr_pnt_dnst")] <- "pnt_dnst"
 
-  } else {
+  }} else {
 
     ldr_sapply_hght <- sapply(seq(length(crdnt_x)), function(i) {
-      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = NULL)
+      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = NULL, filter = NULL)
       ##check if order is right when cbinding
       #plts_name <- as.character(plotID[i])
       #calculate maximal height

@@ -4,7 +4,8 @@
 \alias{ldr_query}
 \title{Get statistical information about lidar data on a plot}
 \usage{
-ldr_query(plotID, crdnt_x, crdnt_y, radius, height = F)
+ldr_query(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NULL,
+  dens = F)
 }
 \arguments{
 \item{dataframe_crdnt}{Dataframe with plot-ID, x-coordinates and y-coordinates

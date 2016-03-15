@@ -1,6 +1,6 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-mod_date <- "16_02_25_c"
+mod_date <- "16_02_09"
 load(paste0("gpm_models_rf_", mod_date, ".rda"))
 
 library(gpm)
@@ -61,6 +61,8 @@ tests$model_select_sum[tests$model_select_sum == "flm" |
 tests$model_select_sum[tests$model_select_sum == "fod"] <- "forest_disturbed"
 
 tests_agg_sum <- aggregate(tests, by=list(tests$model_response, tests$model_select_sum), FUN="mean")
+
+write.csv(tests_agg_sum, file = "tests_agg_sum.csv", row.names = F)
 
 tests_agg_land <- aggregate(tests_agg_sum, by=list(tests_agg_sum$Group.2), FUN = "mean")
 tests_agg_spec <- aggregate(tests_agg_sum, by=list(tests_agg_sum$Group.1), FUN = "mean")

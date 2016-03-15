@@ -1,6 +1,6 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-mod_date <- "16_02_10"
+mod_date <- "16_02_09"
 load(paste0("gpm_models_rf_", mod_date, ".rda"))
 
 
@@ -16,6 +16,7 @@ library(rasterVis)
 ######plotting "Levelplot of R2 of Species by landuse"###
 species <- tests_agg_sum[, 1]
 species <- unique(species)
+species <- ("arthropod abundance", "Collembola", "Acari", "Araneae", "Heteroptera", "Orthoptera", "Coleoptera", "Ants*", "Hymenoptera+")
 
 landuse <- tests_agg_sum[, 2]
 landuse <- unique(landuse)
@@ -37,8 +38,8 @@ rst_rsq <- raster(dat_rsq, xmn = 0.5, xmx = 11.5,
 clr <- colorRampPalette(brewer.pal(9, "YlOrRd"))
 levelplot(rst_rsq, scales = list(x = list(at = 1:11, labels = as.character(species)), 
                                  y = list(at = 7:1, labels = as.character(landuse))), ################sorum stimmt Plot, aber warum ist das hier umgedreht? 
-          
+# levelplot(rst_rsq, scales = list(x = list(at = 1:11),y = list(at = 7:1)),
           margin = FALSE, 
           col.regions = clr(101), 
-          at = seq(0, 0.60, 0.01))
+          at = seq(0, 0.45, 0.01))
 ####################################################################################
