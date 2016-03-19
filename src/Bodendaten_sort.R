@@ -141,10 +141,10 @@ beet_SR_fin <- cbind(beet_SR_fin, beet_SR_spec$rich_beet)
 colnames(beet_SR_fin)[ncol(beet_SR_fin)] <- c("rich_beet")
 
 ###write out table with species richness for insct
-write.csv(insct_SR_fin, file=paste0(outpath, "/", "insct_SR_fin.csv"), row.names=F)
-write.csv(beet_SR_fin, file=paste0(outpath, "/", "beet_SR_fin.csv"), row.names=F)
+# write.csv(insct_SR_fin, file=paste0(outpath, "/", "insct_SR_fin.csv"), row.names=F)
+# write.csv(beet_SR_fin, file=paste0(outpath, "/", "beet_SR_fin.csv"), row.names=F)
 
 ###create one table with only technical/abiotic information
 tec_info <- all_SR[,c(1:5)]
-write.csv(tec_info, file=paste0(outpath, "/", "tec_info.csv"),row.names=F)
+#write.csv(tec_info, file=paste0(outpath, "/", "tec_info.csv"),row.names=F)
 

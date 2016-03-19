@@ -1,11 +1,20 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-mod_date <- "16_02_09"
+mod_date <- "16_03_17__100_eg_"
 load(paste0("gpm_models_rf_", mod_date, ".rda"))
+models <- get(paste0("models_", mod_date))
 
 library(gpm)
 library(xlsx)
 ###testing###
+
+# l <- lapply(seq(11), function(x){
+#   temp <- lapply(seq(100), function(y){
+#     models_mit_sa[[x]][[y]]$model$results$Rsquared[models_mit_sa[[x]][[y]]$model$bestSubset] - 
+#       models_no_sa[[x]][[y]]$model$results$Rsquared[models_mit_sa[[x]][[y]]$model$bestSubset]
+#   })
+#   do.call("rbind", temp)
+# })
 
 var_imp <- compVarImp(models)
 
@@ -62,7 +71,7 @@ tests$model_select_sum[tests$model_select_sum == "fod"] <- "forest_disturbed"
 
 tests_agg_sum <- aggregate(tests, by=list(tests$model_response, tests$model_select_sum), FUN="mean")
 
-write.csv(tests_agg_sum, file = "tests_agg_sum.csv", row.names = F)
+#write.csv(tests_agg_sum, file = paste0("tests_agg_sum", mod_date, ".csv", row.names = F)
 
 tests_agg_land <- aggregate(tests_agg_sum, by=list(tests_agg_sum$Group.2), FUN = "mean")
 tests_agg_spec <- aggregate(tests_agg_sum, by=list(tests_agg_sum$Group.1), FUN = "mean")
@@ -100,7 +109,7 @@ colnames(tests_srt_spec)[1] <- c("spec")
 tests_srt_spec <- tests_srt_spec[,c((which(colnames(tests_srt_spec) == "spec")),
                                     ((which(colnames(tests_srt_spec) == "testing_response")):
                                        (which(colnames(tests_srt_spec) == "residuals"))))]
-
+write.csv(tests_srt_spec[, c(1,5)], file = paste0("spec_r2_", mod_date, ".csv"), row.names =F)
 # write.csv(tests_srt, file = "tests_srt_16_02_10.csv", row.names = F)
 # write.csv(tests_srt_sum, file = "tests_srt_sum_16_02_10.csv", row.names = F)
 # write.csv(tests_srt_land, file = "tests_srt_land_16_02_10.csv", row.names = F)
@@ -134,41 +143,41 @@ save.xlsx(paste0("stats_modell_", mod_date ,".xlsx"), tests_srt_sum, tests_srt_l
 
 
 
-#########################################################################################################
-
-#plot single plots
-sngl_nm_rspns <- "Acari"
-sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~
-                 tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
-plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)]
-     ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)],
-     main = sngl_nm_rspns)
-abline(sngl_reg)
-
-#plot number of pairs to r²
-pair_r2_reg <- lm(tests$r_squared ~ tests$pairs)
-plot(tests$r_squared ~ tests$pairs)
-abline(pair_r2_reg)
-summary(pair_r2_reg)
-
-pair_agg_r2_reg <- lm(tests_agg$r_squared ~ tests_agg$pairs)
-plot(tests_agg$r_squared ~ tests_agg$pairs)
-abline(pair_agg_r2_reg)
-summary(pair_agg_r2_reg)
-
-pair_agg_sum_r2_reg <- lm(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
-plot(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
-abline(pair_agg_sum_r2_reg)
-summary(pair_agg_sum_r2_reg)
-
-#plot histogram of pairs
-hist(tests$pairs, breaks=50) # breaks = 5 als Abbildung
-qntl_pairs <- quantile(tests$pairs, probs = seq(0, 1, 0.20))
-#clip df to only variables with more than 100 pairs
-tests_clp <- tests_agg[which(tests_agg$pairs>= 30),]
-
-# check regression again
-pair_r2_reg_clp <- lm(tests_clp$r_squared ~ tests_clp$pairs)
-plot(tests_clp$r_squared ~ tests_clp$pairs)
-abline(pair_r2_reg_clp)
-summary(pair_r2_reg_clp)
+# #########################################################################################################
+# 
+# #plot single plots
+# sngl_nm_rspns <- "Acari"
+# sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~
+#                  tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
+# plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)]
+#      ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)],
+#      main = sngl_nm_rspns)
+# abline(sngl_reg)
+# 
+# #plot number of pairs to r²
+# pair_r2_reg <- lm(tests$r_squared ~ tests$pairs)
+# plot(tests$r_squared ~ tests$pairs)
+# abline(pair_r2_reg)
+# summary(pair_r2_reg)
+# 
+# pair_agg_r2_reg <- lm(tests_agg$r_squared ~ tests_agg$pairs)
+# plot(tests_agg$r_squared ~ tests_agg$pairs)
+# abline(pair_agg_r2_reg)
+# summary(pair_agg_r2_reg)
+# 
+# pair_agg_sum_r2_reg <- lm(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
+# plot(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
+# abline(pair_agg_sum_r2_reg)
+# summary(pair_agg_sum_r2_reg)
+# 
+# #plot histogram of pairs
+# hist(tests$pairs, breaks=50) # breaks = 5 als Abbildung
+# qntl_pairs <- quantile(tests$pairs, probs = seq(0, 1, 0.20))
+# #clip df to only variables with more than 100 pairs
+# tests_clp <- tests_agg[which(tests_agg$pairs>= 30),]
+# 
+# # check regression again
+# pair_r2_reg_clp <- lm(tests_clp$r_squared ~ tests_clp$pairs)
+# plot(tests_clp$r_squared ~ tests_clp$pairs)
+# abline(pair_r2_reg_clp)
+# summary(pair_r2_reg_clp)

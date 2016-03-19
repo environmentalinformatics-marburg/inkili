@@ -7,7 +7,7 @@ setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht au
 library(gpm)
 library(grid)
 
-mod_date <- "16_03_15"
+mod_date <- "16_03_17__100_eg_"
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
 ###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
@@ -15,34 +15,26 @@ grnd_ldr <- read.table(paste0(mod_date, "grnd_ldr.csv"),
                          header = TRUE, sep = ",", dec = ".")
 
 ###filtering plots by scan angle
-grnd_ldr <- grnd_ldr[which(grnd_ldr$max_angl <= 25),]
+#grnd_ldr <- grnd_ldr[which(grnd_ldr$max_angl <= 25),]
 ###
-
-#grnd_ldr$rich_insct <- as.numeric(grnd_ldr$rich_insct)
 
 # meta_data <- createGPMMeta(grnd_ldr, type = "input",
 #                            selector = 1, response = c(30:63, 67:403),
 #                            independent = c(4:6, 8:18), meta = c(2,3,7,20:30, 64:66))
 meta_data <- createGPMMeta(grnd_ldr, type = "input",
                            selector = 1,
-                           #response and independent from "colname" to "colname"
-                           #- better handling, when new columns are made
-                           response = c((which(colnames(grnd_ldr) == "total_insct")):
-                                          (which(colnames(grnd_ldr) == "ttl_insct_rdc")),
+
+                           response = c((which(colnames(grnd_ldr) == "Diplura")):
+                                          (which(colnames(grnd_ldr) == "Siphonaptera")),
                                         (which(colnames(grnd_ldr) == "Agri0001")):
-                                          (which(colnames(grnd_ldr) == "rich_beet"))),
+                                          (which(colnames(grnd_ldr) == "Fami0007"))),
                            independent = c((which(colnames(grnd_ldr) == "max_hght")):
                                              (which(colnames(grnd_ldr) == "mdn")),
-                                           (which(colnames(grnd_ldr) == "max_rtrn")): # verändert 16_02_25_b
-                                             (which(colnames(grnd_ldr) == "qntl_75")), #veränder 16_03_11_a
-                                           (which(colnames(grnd_ldr) == "qntl_rng")): #veränder 16_03_11_a
-                                           #(which(colnames(grnd_ldr) == "cffnt_intcpt")): #verändert 16_03_14
+                                           (which(colnames(grnd_ldr) == "max_rtrn")):
+                                             (which(colnames(grnd_ldr) == "qntl_75")),
+                                           (which(colnames(grnd_ldr) == "qntl_rng")):
                                              (which(colnames(grnd_ldr) == "sd_per_rtrn_2")),
-                                           (which(colnames(grnd_ldr) == "hght_asl"))
-#                                           ,
-#                                            (which(colnames(grnd_ldr) == "slp")):
-#                                              (which(colnames(grnd_ldr) == "asp"))
-                                           ),
+                                           (which(colnames(grnd_ldr) == "hght_asl"))),
                            meta = c((which(colnames(grnd_ldr) == "crdnt_x")),
                                     (which(colnames(grnd_ldr) == "crdnt_y")),
                                     (which(colnames(grnd_ldr) == "max_angl")),
@@ -52,9 +44,8 @@ meta_data <- createGPMMeta(grnd_ldr, type = "input",
                                     (which(colnames(grnd_ldr) == "plotID_beet")):
                                       (which(colnames(grnd_ldr) == "rnd_beet"))))
 
-grnd_ldr_df <- grnd_ldr
+grnd_ldr_df <- grnd_ldr # for later inspectation of df
 grnd_ldr <- gpm(grnd_ldr, meta_data)
-# save(grnd_ldr, file = "processed/grnd_ldr.rda")
 
 # Select responses occuring at least across 20 unique selector values on average
 # load("processed/grnd_ldr.rda")
@@ -74,15 +65,11 @@ rownames(common_response) <- NULL
 # save(common_response_variables, file = "gpm_common_response_variables.rda")
 # save(common_response, file = "gpm_common_response.rda")
 
-
 # Compile model evaluation dataset ---------------------------------------------
 grnd_ldr_resamples <- resamplingsByVariable(x = grnd_ldr@data$input,
                                               selector = plotid,
                                               resample = 100)
 # save(grnd_ldr_resamples, file = "gpm_grnd_ldr_resamples.rda")
-
-
-
 
 # Split dataset into testing and training samples for each individual species --
 # load("processed/grnd_ldr.rda")
@@ -96,8 +83,6 @@ grnd_ldr_trte <- splitMultResp(x = grnd_ldr@data$input,
 # grnd_ldr_trte[[10]][[2]]$testing$SAMPLES #rownumber
 # grnd_ldr@data$input[grnd_ldr_trte[[10]][[100]]$testing$SAMPLES, grnd_ldr_trte[[10]][[100]]$testing$RESPONSE] #value
 
-
-
 # Evaluate prediction models ---------------------------------------------------
 # load("processed/grnd_ldr.rda")
 # load("processed/common_response_variables.rda")
@@ -110,11 +95,11 @@ independent <- grnd_ldr@meta$input$INDEPENDENT
 # write.csv(grnd_ldr_df_occ, file = paste0("/media/aziegler/Volume/data_div/", "grnd_ldr_df_occ.csv"), row.names = F)
 
 ######model calculation####################################################
-#load("gpm_models_rf_16_03_03.rda") ###which model does what: data_div/gpm_models_readme.txt
+#load("gpm_models_rf_16_03_16__25_0.rda") ###which model does what: data_div/gpm_models_readme.txt
 models <- trainModel(x = grnd_ldr,
                      response = response, independent = independent,
                      resamples = grnd_ldr_trte, n_var = seq(1,9,1),
-                     response_nbr = c(1:11), resample_nbr = c(1:100), ###bei min_occ_thv = 20 stand hier: (1:11); (1:100)
+                     response_nbr = c(1:8), resample_nbr = c(1:100), ###bei min_occ_thv = 20 stand hier: (1:11); (1:100)
                      mthd = "rf", cv_nbr = 10)
 
 # compRegrTests(models, per_model = TRUE, per_selector = FALSE,
@@ -126,49 +111,53 @@ info <- append(info,
 info <- append(info,
                paste0("min_occurence__occ_", min_occ, "_rsmpl_", min_rsmpl, "_thv_", min_thv)) ######außerdem noch datum des modelllaufs einfügen
 
-#save(models, info, file = paste0("gpm_models_rf_", mod_date, ".rda"))
-save(models, info, file = paste0("gpm_models_rf_16_03_14_b.rda"))
+assign(paste0("models_", mod_date), models)
+assign(paste0("info_", mod_date), info)
+
+
+save(list = c((paste0("models_", mod_date)),(paste0("info_", mod_date))), file = paste0("gpm_models_rf_", mod_date, ".rda"))
+#save(models, info, file = paste0("gpm_models_rf_16_03_14_b.rda"))
 ####################################################################################
 
 
 
-######################################################################################
-###different stuff from testing phase###
-######################################################################################
-
-#plot single plots
-sngl_nm_rspns <- "Acari"
-sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~
-                 tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
-plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)]
-     ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)],
-     main = sngl_nm_rspns)
-abline(sngl_reg)
-
-#plot number of pairs to r²
-pair_r2_reg <- lm(tests$r_squared ~ tests$pairs)
-plot(tests$r_squared ~ tests$pairs)
-abline(pair_r2_reg)
-summary(pair_r2_reg)
-
-pair_agg_r2_reg <- lm(tests_agg$r_squared ~ tests_agg$pairs)
-plot(tests_agg$r_squared ~ tests_agg$pairs)
-abline(pair_agg_r2_reg)
-summary(pair_agg_r2_reg)
-
-pair_agg_sum_r2_reg <- lm(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
-plot(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
-abline(pair_agg_sum_r2_reg)
-summary(pair_agg_sum_r2_reg)
-
-#plot histogram of pairs
-hist(tests$pairs, breaks=50) # breaks = 5 als Abbildung
-qntl_pairs <- quantile(tests$pairs, probs = seq(0, 1, 0.20))
-#clip df to only variables with more than 100 pairs
-tests_clp <- tests_agg[which(tests_agg$pairs>= 30),]
-
-# check regression again
-pair_r2_reg_clp <- lm(tests_clp$r_squared ~ tests_clp$pairs)
-plot(tests_clp$r_squared ~ tests_clp$pairs)
-abline(pair_r2_reg_clp)
-summary(pair_r2_reg_clp)
+# ######################################################################################
+# ###different stuff from testing phase###
+# ######################################################################################
+#
+# #plot single plots
+# sngl_nm_rspns <- "Acari"
+# sngl_reg <- lm(tests$testing_response[which(tests$model_response == sngl_nm_rspns)] ~
+#                  tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)], main = sngl_nm_rspns)
+# plot(tests$testing_response[which(tests$model_response == sngl_nm_rspns)]
+#      ~ tests$testing_predicted[which(tests$model_response == sngl_nm_rspns)],
+#      main = sngl_nm_rspns)
+# abline(sngl_reg)
+#
+# #plot number of pairs to r²
+# pair_r2_reg <- lm(tests$r_squared ~ tests$pairs)
+# plot(tests$r_squared ~ tests$pairs)
+# abline(pair_r2_reg)
+# summary(pair_r2_reg)
+#
+# pair_agg_r2_reg <- lm(tests_agg$r_squared ~ tests_agg$pairs)
+# plot(tests_agg$r_squared ~ tests_agg$pairs)
+# abline(pair_agg_r2_reg)
+# summary(pair_agg_r2_reg)
+#
+# pair_agg_sum_r2_reg <- lm(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
+# plot(tests_agg_sum$r_squared ~ tests_agg_sum$pairs)
+# abline(pair_agg_sum_r2_reg)
+# summary(pair_agg_sum_r2_reg)
+#
+# #plot histogram of pairs
+# hist(tests$pairs, breaks=50) # breaks = 5 als Abbildung
+# qntl_pairs <- quantile(tests$pairs, probs = seq(0, 1, 0.20))
+# #clip df to only variables with more than 100 pairs
+# tests_clp <- tests_agg[which(tests_agg$pairs>= 30),]
+#
+# # check regression again
+# pair_r2_reg_clp <- lm(tests_clp$r_squared ~ tests_clp$pairs)
+# plot(tests_clp$r_squared ~ tests_clp$pairs)
+# abline(pair_r2_reg_clp)
+# summary(pair_r2_reg_clp)

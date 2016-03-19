@@ -16,7 +16,7 @@
 
 ###work on: statistical values as an option
 
-ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NULL, dens = F){
+ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NULL, dens = F, normalise = ""){
 
   ###db aufrufen (von Stephan Wöllauer)
 
@@ -28,6 +28,16 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NUL
 
   func_ldr <- function(utm_x, utm_y, r, normalise, filter){
     all_points <- pointdb$query_radius_rect(x = utm_x, y = utm_y, radius = r, normalise = normalise, filter = filter)
+    print(normalise)
+    if(is.null(filter)){
+      print("no filter")
+    } else {
+      if (filter == "last_return=1"){
+        print("filter = last_return=1")
+      } else {
+        print("different filter")
+      }}
+
     #all_points <- all_points[all_points$z>1,] #1m ist zu hoch
     return(all_points)
   }
@@ -35,7 +45,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NUL
     if(dens ==F) {
 
     ldr_sapply <- sapply(seq(length(crdnt_x)), function(i) {
-      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = "", filter = NULL) #normalise = "origin,ground,extremes"
+      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, filter = NULL, normalise = normalise) #normalise = "origin,ground,extremes"
 
       ##check if order is right when cbinding
       #plts_name <- as.character(plotID[i])
@@ -154,8 +164,8 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NUL
     ldr_var <- cbind(plotID, crdnt_x, crdnt_y, vars)
     } else {
       ldr_pnt_dnst <- sapply(seq(length(crdnt_x)), function(i) {
-        ldr_pnts_crdnt <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = NULL, filter = "last_return=1")
-        pnt_dnst <- length(ldr_pnts_crdnt[[1]]) / (radius * radius)
+        ldr_pnts_crdnt <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = normalise, filter = "last_return=1")
+        pnt_dnst <- length(ldr_pnts_crdnt[[1]]) / ((2*radius) * (2*radius))
         return(pnt_dnst = pnt_dnst)
     })
       vars <- as.data.frame(ldr_pnt_dnst)
@@ -166,7 +176,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NUL
   }} else {
 
     ldr_sapply_hght <- sapply(seq(length(crdnt_x)), function(i) {
-      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = NULL, filter = NULL)
+      ldr_pnts_all <- func_ldr(crdnt_x[i], crdnt_y[i], radius, normalise = normalise, filter = NULL)
       ##check if order is right when cbinding
       #plts_name <- as.character(plotID[i])
       #calculate maximal height
