@@ -31,9 +31,30 @@ max_mod <- lapply(seq(nrow(spec_r2)), function(x){
   best_col <- cbind(best_name, best_value)
 })
 best_mod_col <- do.call(rbind, max_mod)
+best_mod_col <- as.data.frame(best_mod_col)
+best_mod_col$best_name <- as.character(best_mod_col$best_name)
+spec_r2$spec <- as.character(spec_r2$spec)
 
-best_mod <- cbind(spec_r2, best_mod_col)
+best_mods_df <- cbind(spec_r2, best_mod_col)
 
-write.csv(best_mod, file = paste0(inpath, "best_mod_16_03_17.csv"))
+#write.csv(best_mods_df, file = paste0(inpath, "best_mod_16_03_17.csv"))
 
+best_mods <- lapply(seq(best_mods_df$best_name), function(i){
+  print(i)
+  act_resp <- best_mods_df$spec[i]
+  name_mod_2 <- best_mods_df$best_name[i]
+  name_mod_1 <- strsplit(name_mod_2, "__")[[1]][1]
+  name_mod <- paste0(name_mod_1, "_")
+  act_mod <- get(load(paste0(inpath, "gpm_models_rf_16_03_17__", name_mod, ".rda")))
+  best_spec <- lapply(seq(act_mod), function(k){
+    
+    if (act_mod[[k]][[1]]$response == act_resp) {
+      mod <- act_mod[[k]]
+      return(mod)
+    }
+  })
+  only_best_mod_lst <- Filter(Negate(is.null), best_spec)
+  only_best_mod <- unlist(only_best_mod_lst, recursive = F)
+})
 
+save(best_mods, file = paste0(inpath, "best_mods_16_03_17"))
