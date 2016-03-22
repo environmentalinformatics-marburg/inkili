@@ -8,10 +8,10 @@ spec_r2_entries <- lapply(spec_r2_lst, function(x){
   csv_str <- strsplit(x, "__")[[1]][2]
   name_mod <- strsplit(csv_str, "\\.")[[1]][1]
   spec_r2_csv <- read.csv(paste0(inpath, x), header=T)
-  spec_r2_csv$spec <- as.character(spec_r2_csv$spec)
-  spec_r2_csv$spec[spec_r2_csv$spec == "Hym_excl_ants"] <- "Hymenoptera"
-  spec_r2_csv$spec[spec_r2_csv$spec == "Hym_ants"] <- "Formicideae"
-  spec_r2_csv$spec <- as.factor(spec_r2_csv$spec)
+#   spec_r2_csv$spec <- as.character(spec_r2_csv$spec)
+#   spec_r2_csv$spec[spec_r2_csv$spec == "Hym_excl_ants"] <- "Hymenoptera"
+#   spec_r2_csv$spec[spec_r2_csv$spec == "Hym_ants"] <- "Formicideae"
+#   spec_r2_csv$spec <- as.factor(spec_r2_csv$spec)
   colnames(spec_r2_csv)[which(colnames(spec_r2_csv)=="r_squared")] <- paste0(name_mod, "_r2")
   spec_r2_srt <- spec_r2_csv[with(spec_r2_csv, order(spec_r2_csv$spec), decreasing = F),]
 })
@@ -45,6 +45,7 @@ best_mods <- lapply(seq(best_mods_df$best_name), function(i){
   name_mod_2 <- best_mods_df$best_name[i]
   name_mod_1 <- strsplit(name_mod_2, "__")[[1]][1]
   name_mod <- paste0(name_mod_1, "_")
+  print(name_mod)
   act_mod <- get(load(paste0(inpath, "gpm_models_rf_16_03_17__", name_mod, ".rda")))
   best_spec <- lapply(seq(act_mod), function(k){
     
@@ -57,4 +58,4 @@ best_mods <- lapply(seq(best_mods_df$best_name), function(i){
   only_best_mod <- unlist(only_best_mod_lst, recursive = F)
 })
 
-save(best_mods, file = paste0(inpath, "best_mods_16_03_17"))
+save(best_mods, file = paste0(inpath, "best_mods_16_03_17.rda"))

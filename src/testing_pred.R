@@ -1,8 +1,11 @@
 setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht ausführen lässt: Volume mounten
 
-mod_date <- "16_03_17__100_eg_"
-load(paste0("gpm_models_rf_", mod_date, ".rda"))
-models <- get(paste0("models_", mod_date))
+load("best_mods_16_03_17.rda")
+#  mod_date <- "16_03_17__50_eg_"
+#  load(paste0("gpm_models_rf_", mod_date, ".rda"))
+#  models <- get(paste0("models_", mod_date))
+
+models <- best_mods
 
 library(gpm)
 library(xlsx)
@@ -136,9 +139,10 @@ save.xlsx <- function (file, ...)
   print(paste("Workbook", file, "has", nobjects, "worksheets."))
 }
 # ##Aufruf
-save.xlsx(paste0("stats_modell_", mod_date ,".xlsx"), tests_srt_sum, tests_srt_land,
+#save.xlsx(paste0("stats_modell_", mod_date ,".xlsx"), tests_srt_sum, tests_srt_land,
+          #tests_srt_spec, all_r2, max_r2, min_r2, var_imp_srt)
+save.xlsx("best_mods_16_03_17.xlsx", tests_srt_sum, tests_srt_land,
           tests_srt_spec, all_r2, max_r2, min_r2, var_imp_srt)
-
 
 
 

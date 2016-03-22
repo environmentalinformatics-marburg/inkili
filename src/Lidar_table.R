@@ -34,9 +34,9 @@ library(raster)
 inpath <- ("/media/aziegler/Volume/data_div")
 outpath <- ("/media/aziegler/Volume/data_div")
 #setwd()
-mod_date <- "16_03_17__100_"   # yy_mm_dd
-ldr_radius <- 100
-norm = "" #normalise = "origin,ground,extremes"
+mod_date <- "16_03_17__50_eg_"   # yy_mm_dd
+ldr_radius <- 50
+norm = "ground,extremes" #normalise = "origin,ground,extremes"
 ###############################################################################
 
 #tec_info is created in Bodendaten_sort.R

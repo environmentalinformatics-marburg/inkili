@@ -7,7 +7,7 @@ setwd("/media/aziegler/Volume/data_div/") ###alz: wenn sich diese Zeile nicht au
 library(gpm)
 library(grid)
 
-mod_date <- "16_03_17__100_eg_"
+mod_date <- "16_03_17__50_eg_"
 
 # Read and adjust data from S. Schlauss, level 300 -----------------------------
 ###hier Daten gemittelt auf site und Round (Stand: 14.12.2015)
