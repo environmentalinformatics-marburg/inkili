@@ -57,6 +57,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NUL
       ldr_mdn_rtrn <- median(ldr_pnts_all$returns)
       #calculate maximum scan angle within plot
       ldr_max_angl <- max(abs(ldr_pnts_all$scanAngleRank))
+      ldr_av_angl <- mean(abs(ldr_pnts_all$scanAngleRank))
 
 
       # calculate quantiles # changed: from Stephan
@@ -140,7 +141,7 @@ ldr_query <- function(plotID, crdnt_x, crdnt_y, radius, height = F, filter = NUL
         ldr_sd_nmbr_rtrn <- sd(ldr_pnts_all$returns)
       }
       return(list(max_hght = ldr_max_hght, sd = ldr_sd_hght, mdn = ldr_mdn_rtrn,
-                  max_angl = ldr_max_angl, max_rtrn = ldr_max_rtrn,
+                  max_angl = ldr_max_angl, av_angl = ldr_av_angl, max_rtrn = ldr_max_rtrn,
                   #min_rtrn = ldr_min_rtrn,
                   sd_lst_rtrn = ldr_sd_last_rtrn, sd_max_rtrn = ldr_sd_nmbr_rtrn,
                   qntl_0 = ldr_qntl_0, qntl_25 = ldr_qntl_25,

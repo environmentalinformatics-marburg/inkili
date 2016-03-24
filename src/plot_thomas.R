@@ -146,12 +146,10 @@ plt_spec <- spplot(rst_rsq_spec, scales = list(draw = F), ################sorum 
                       at = seq(0, 0.30, 0.01))
 ####################################################################################
 
-###
-###
 
 library(grid)
 
-png("test.png", width = 14, height = 14, units = "cm", res = 300)
+png("land_spec_av.png", width = 14, height = 14, units = "cm", res = 300)
 grid.newpage()
 
 vp0 <- viewport(x = 0, y = 0, just = c("left", "bottom"), 
