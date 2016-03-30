@@ -17,8 +17,8 @@ tests_agg_sum <- read.csv(paste0(inpath, "tests_agg_sum_", mod_date, ".csv"), he
 tests_rdc <- tests_agg_sum
 tests_rdc$Group.1 <- as.character(tests_rdc$Group.1)
 #tests_rdc$Group.1[tests_rdc$Group.1 == "rich_insct"] <- "assemblage richness"
-tests_rdc$Group.1[tests_rdc$Group.1 == "Hym_ants"] <- "Ants*"
-tests_rdc$Group.1[tests_rdc$Group.1 == "Hym_excl_ants"] <- "Hymenoptera*"
+tests_rdc$Group.1[tests_rdc$Group.1 == "Hym_ants"] <- "Formicidae"
+tests_rdc$Group.1[tests_rdc$Group.1 == "Hym_excl_ants"] <- "Hymenoptera"
 tests_rdc$Group.2 <- as.character(tests_rdc$Group.2)
 tests_rdc$Group.2[tests_rdc$Group.2 == "cof"] <- "coffee"
 tests_rdc$Group.2[tests_rdc$Group.2 == "forest_disturbed"] <- "disturbed forest"
@@ -32,7 +32,7 @@ tests_rdc$Group.2 <- as.factor(tests_rdc$Group.2)
 colnames(tests_rdc)[1] <- "arthro"
 colnames(tests_rdc)[2] <- "landuse"
 
-####creating average row
+####creating average row and column
 agg_list_spec <- aggregate(tests_rdc, by=list(tests_rdc$arthro), FUN = mean) 
 agg_list_spec$arthro <- agg_list_spec$Group.1
 agg_list_spec$landuse <- "average"
@@ -45,7 +45,7 @@ agg_list_land$arthro <- "average"
 agg_list_land <- agg_list_land[,c(2:ncol(agg_list_land))]
 agg_df_spec_land <- rbind(agg_df_spec, agg_list_land)
 
-#plot_tbl_srt <- plot_tbl[with(agg_df_spec_land, order(agg_df_spec_land$landuse, decreasing = F)),]
+
 
 plot_tbl_srt <- tests_rdc[with(tests_rdc, order(tests_rdc$landuse, tests_rdc$arthro, decreasing = F)),]
 
@@ -54,6 +54,8 @@ plot_tbl_srt <- tests_rdc[with(tests_rdc, order(tests_rdc$landuse, tests_rdc$art
 #   plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
 #          tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
 # })
+
+
 
 ######plotting "Levelplot of R2 of Species by landuse"###
 species <- plot_tbl_srt$arthro
@@ -74,8 +76,8 @@ lst_rsq_land <- as.list(agg_list_land$r_squared[c(2:8)])
 
 dat_rsq_land <- t(do.call("cbind", lst_rsq_land))
 
-dat_rsq_land <- sort(dat_rsq_land, decreasing = F) ####hier hängts noch
-
+dat_rsq_land <- sort(dat_rsq_land, decreasing = T) 
+dat_rsq_land <- as.matrix(dat_rsq_land)
 rst_rsq_land <- raster(dat_rsq_land, xmn = 0.5, xmx = 1.5, 
                   ymn = 0.5, ymx = 7.5)
 
@@ -89,7 +91,8 @@ order_spec <- df_spec$spec
 lst_rsq_spec <- as.list(agg_list_spec$r_squared)
 
 dat_rsq_spec <- do.call("cbind", lst_rsq_spec)
-dat_rsq_spec <- sort(dat_rsq_spec, decreasing = T)
+dat_rsq_spec <- sort(dat_rsq_spec, decreasing = F)
+dat_rsq_spec <- t(as.matrix(dat_rsq_spec))
 rst_rsq_spec <- raster(dat_rsq_spec, xmn = 0.5, xmx = 8.5, 
                   ymn = 0.5, ymx = 1.5)
 
@@ -109,20 +112,36 @@ rownames(dat_rsq) <- landuse
 
 df_rsq <- as.data.frame(dat_rsq)
 df_rsq$land <- rownames(df_rsq)
-df_rsq_srt_land <- df_rsq[match(order_land, df_rsq$land),]
+reorder_land <- order_land[c(7,6,5,4,3,2,1)]
+df_rsq_srt_land <- df_rsq[match(reorder_land, df_rsq$land),]
 df_rsq_srt_land <- rbind(df_rsq_srt_land, colnames(df_rsq_srt_land))
-df_rsq_srt <- df_rsq_srt_land[,match(order_spec, df_rsq_srt_land[8,])]
-df_rsq_resort <- df_rsq_srt[c(1:8),c(1:7)]
+reorder_spec <- order_spec[c(8,7,6,5,4,3,2,1)]
+df_rsq_srt <- df_rsq_srt_land[,match(reorder_spec, df_rsq_srt_land[8,])]
+df_rsq_resort <- df_rsq_srt[c(1:7),c(1:8)]
+df_rsq_num <- lapply(seq(colnames(df_rsq_resort)), function(x){
+  rsq_num <- as.numeric(df_rsq_resort[,x])
+})
+df_rsq_num <- do.call("cbind", df_rsq_num)
+df_rst_rsq <- as.matrix(df_rsq_num)
 
-
-
-rst_rsq <- raster(dat_rsq, xmn = 0.5, xmx = 8.5, 
+rst_rsq <- raster(df_rst_rsq, xmn = 0.5, xmx = 8.5, 
                   ymn = .5, ymx = 7.5)
+
+
+########writing out table###
+
+df_lnd_av <- cbind(df_rsq_resort, dat_rsq_land)
+spec_av <- c(dat_rsq_spec, NA)
+df_lnd_spc_av <- rbind(spec_av, df_lnd_av)
+rownames(df_lnd_spc_av)[1] <- "average"
+colnames(df_lnd_spc_av)[9] <- "average"
+
+write.csv(df_lnd_spc_av, file = "heatmap_table.csv")
 
 ###create plots from all 3
 clr <- colorRampPalette(brewer.pal(9, "YlOrRd"))
-plt <- levelplot(rst_rsq, scales = list(x = list(rot=45, at = 1:8, labels = as.character(species)), 
-                                        y = list(at = c(7:1), labels = as.character(landuse))), ################sorum stimmt Plot, aber warum ist das hier umgedreht? 
+plt <- levelplot(rst_rsq, scales = list(x = list(rot=45, at = 1:8, labels = as.character(reorder_spec)), 
+                                        y = list(at = c(7:1), labels = as.character(reorder_land))), ################sorum stimmt Plot, aber warum ist das hier umgedreht? 
                  # levelplot(rst_rsq, scales = list(x = list(at = 1:11),y = list(at = 7:1)),
                  margin = FALSE, colorkey = FALSE,
                  col.regions = clr(101), 
@@ -195,7 +214,7 @@ vp3 <- viewport(x = 1.25, y = 0, just = c("left", "bottom"),
                 width = .2, height = 1)
 pushViewport(vp3)
 draw.colorkey(key = list(col = clr(101), width = .75, height = .75,
-                         at = seq(0, 0.30, 0.01),
+                         at = seq(0, 0.6, 0.01),
                          space = "right"), draw = TRUE)
 dev.off()
 
@@ -206,6 +225,7 @@ var_imp_org <- read.csv(paste0("var_imp_srt_", mod_date, ".csv"))
 row.names(var_imp_org) <- var_imp_org$X
 var_imp <- var_imp_org[, 2:(ncol(var_imp_org)-1)]
 vars <- rownames(var_imp)
+
 var_imp_lst <- as.list(var_imp)
 dat_var_imp <- do.call("cbind", var_imp_lst)
 rst_var_imp <-  raster(dat_var_imp, xmn = 0.5, xmx = 8.5, 
