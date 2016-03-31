@@ -49,13 +49,6 @@ agg_df_spec_land <- rbind(agg_df_spec, agg_list_land)
 
 plot_tbl_srt <- tests_rdc[with(tests_rdc, order(tests_rdc$landuse, tests_rdc$arthro, decreasing = F)),]
 
-# #pred ~ resp
-# plot_all <- lapply(seq(response), function(a){
-#   plot(tests$testing_response[which(tests$model_response == response[a])] ~ 
-#          tests$testing_predicted[which(tests$model_response == response[a])], main = response[a])
-# })
-
-
 
 ######plotting "Levelplot of R2 of Species by landuse"###
 species <- plot_tbl_srt$arthro
@@ -182,11 +175,11 @@ trellis.par.set(custom_theme)
 
 ####################################################################################
 
-png(paste0("land_spec_av", mod_date, ".png"), width = 14, height = 14, units = "cm", res = 300)
+png(paste0("land_spec_av", mod_date, ".png"), width = 14, height = 10, units = "cm", res = 300)
 grid.newpage()
 
 vp0 <- viewport(x = 0, y = 0, just = c("left", "bottom"), 
-                width = .7, height = .7)
+                width = .7, height = .9)
 pushViewport(vp0)
 print(plt, newpage = FALSE)
 
@@ -225,9 +218,28 @@ var_imp_org <- read.csv(paste0("var_imp_srt_", mod_date, ".csv"))
 row.names(var_imp_org) <- var_imp_org$X
 var_imp <- var_imp_org[, 2:(ncol(var_imp_org)-1)]
 vars <- rownames(var_imp)
+vars[which(vars == "cffnt_intcpt")] <- "dens_cof_off"
+vars[which(vars == "cffnt_x")] <- "dens_cof_x"
+vars[which(vars == "cffnt_x2")] <- "dens_cof_x2"
+vars[which(vars == "cffnt_x3")] <- "dens_cof_x3"
+vars[which(vars == "qntl_0")] <- "qrtl_0"
+vars[which(vars == "qntl_25")] <- "qrtl_25"
+vars[which(vars == "qntl_50")] <- "qrtl_50"
+vars[which(vars == "qntl_75")] <- "qrtl_75"
+vars[which(vars == "qntl_rng")] <- "qrtl_rng"
+vars[which(vars == "qntl_75")] <- "qrtl_75"
+vars[which(vars == "max_rtrn")] <- "num_rtrn"
+vars[which(vars == "sd_per_rtrn_1")] <- "sd_rtrn_1"
+vars[which(vars == "sd_per_rtrn_2")] <- "sd_rtrn_2"
+vars[which(vars == "sd_max_rtrn")] <- "sd_num_rtrn"
+colnames(var_imp)[which(colnames(var_imp)=="Hym_ants")] <- "Formicidae"
+colnames(var_imp)[which(colnames(var_imp)=="Hym_excl_ants")] <- "Hymenoptera"
 
-var_imp_lst <- as.list(var_imp)
+var_imp_srt <- var_imp[, match(reorder_spec, colnames(var_imp))]
+
+var_imp_lst <- as.list(var_imp_srt)
 dat_var_imp <- do.call("cbind", var_imp_lst)
+
 rst_var_imp <-  raster(dat_var_imp, xmn = 0.5, xmx = 8.5, 
                        ymn = 0.5, ymx = 18.5)           
 
@@ -237,7 +249,7 @@ dat_var_imp_mean <- t(do.call("cbind", var_imp_mean_lst))
 rst_var_imp_mean <-  raster(dat_var_imp_mean, xmn = 0.5, xmx = 1.5, 
                        ymn = 0.5, ymx = 18.5)
 
-plt_var_imp <- levelplot(rst_var_imp, scales = list(x = list(rot=45, at = 1:8, labels = as.character(species)), 
+plt_var_imp <- levelplot(rst_var_imp, scales = list(x = list(rot=45, at = 1:8, labels = as.character(reorder_spec)), 
                                         y = list(at = c(18:1), labels = as.character(vars))), 
                  margin = FALSE, colorkey = FALSE,
                  col.regions = clr(101), 
@@ -248,21 +260,42 @@ plt_var_imp_mean <- spplot(rst_var_imp_mean, scales = list(draw=F),
                               col.regions = clr(101), 
                               at = seq(0, 1, 0.01))
 
+
+
+#####################write out table #######################
+df_str_av <- cbind(dat_var_imp, dat_var_imp_mean)
+colnames(df_str_av)[ncol(df_str_av)] <- "average"
+df_str_spec_av <- rbind(spec_av, df_str_av)
+rownames(df_str_spec_av) <- c("average", vars)
+
+write.csv(df_str_spec_av, file = "str_var_values.csv")
 #############################################################
+
+
+#############################################################
+###plt_spec
 png(paste0("imp_spec_av", mod_date, ".png"), width = 14, height = 14, units = "cm", res = 300)
 grid.newpage()
 
 bvp0 <- viewport(x = 0, y = 0, just = c("left", "bottom"), 
-                width = 1, height = 1)
+                 width = 1, height = 0.95)
 pushViewport(bvp0)
 print(plt_var_imp, newpage = FALSE)
 
 downViewport(trellis.vpname(name = "figure"))
+####horizontal raster
+
+#####arthropod averages as in heatmap
+trellis.par.set(custom_theme)
+bvp4 <- viewport(x = 0, y = 0.54, just = c("left", "bottom"), 
+                 width = 1, height = 1)
+pushViewport(bvp4)
+print(plt_spec, newpage = FALSE)
 
 ## vertical raster
-
+upViewport()
 bvp2 <- viewport(x = 0.59, y = 0.0, just = c("left", "bottom"), 
-                width = 1, height = 1)
+                 width = 1, height = 1)
 pushViewport(bvp2)
 print(plt_var_imp_mean, newpage = FALSE)
 
@@ -270,9 +303,15 @@ print(plt_var_imp_mean, newpage = FALSE)
 upViewport()
 
 bvp3 <- viewport(x = 1.25, y = 0, just = c("left", "bottom"), 
-                width = .2, height = 1)
+                 width = .2, height = 1)
 pushViewport(bvp3)
 draw.colorkey(key = list(col = clr(101), width = .75, height = .75,
                          at = seq(0, 1, 0.01),
                          space = "right"), draw = TRUE)
+
+
 dev.off()
+
+
+
+
