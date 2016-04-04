@@ -1,0 +1,17 @@
+>software>gpm
+ funktionen aus dem Package gpm, die aufgerufen werden
+
+>software>inkili>R
+ Skripte die verschiedene LiDAR-Abfragen durchführen. 
+
+>software>inkili>src
+ einzelne Skripte um die speziellen Daten aus Alices Masterarbeit für gom vorzubereiten, und dann  vorherzusagen. 
+
+>> standard vorhersage: 
+ *Lidar_table.R mit bestimmten LiDAR radius Datensatz mit Strukturparametern für jeden Plot erstellen
+ *table_crafting.R Arthropoden-Daten mit LiDAR-Datensatz zu einer Tabelle zusammenbasteln -> ergibt die grundtabelle aus der Vorhersage gespeist wird. 
+ *anm_prediction.R Kern gpm random forest vorhersage
+ *testing_pred.R berechnet für verschiedene predictoren und verschiedene Landnutzungsklassen R² etc-Werte. Außerdem gibt es die Variable importance der Variablen aus. Schreibt am Ende unter anderem ein .xlsx File aus um verschiedene Landnutzugnstypen, Importance,... besser vergleichen zu können. 
+ *plotting_pred.R Erstellt Heatmap der R²-Werte für Landnutzung gegen Arthropoden Assemblage und außerdem auch eine Art Heatmap für verschiedene Strukturvariablen gegen Arthropoden Assemblage. 
+
+ 
